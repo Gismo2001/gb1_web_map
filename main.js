@@ -1,3 +1,27 @@
+const son_punStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: 2
+    }),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 4
+  })
+});
+
+const einStyle = new ol.style.Style({
+  image: new ol.style.Circle({
+    fill: new ol.style.Fill({ color: 'rgba(209, 32, 253, 1)'}), // Füge die benötigte Opazität (alpha) hinzu
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: 0.5
+    }),
+    radius: 7
+  })
+});
+
 const queStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
@@ -57,7 +81,6 @@ const bru_andereStyle = new ol.style.Style({
   })
 });
 
-
 const sleStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color: 'red'}),
@@ -78,8 +101,48 @@ const km10scalStyle = new ol.style.Style({
   })
 });
 
+function getStyleForArtEin(feature) {
+  const artValue = feature.get('Ein_ord');
+  let fillColor, strokeColor;
+
+  switch (artValue) {
+    case '1. Ordnung':
+      fillColor = 'rgba(0, 68, 255, .8)';
+      strokeColor = 'black';
+      break;
+    case '2. Ordnung':
+      fillColor = 'rgba(214, 0, 0, .8)';
+      strokeColor = 'black';
+      break;
+    case '3. Ordnung':
+      fillColor = 'rgba(114, 114, 114, .8)';
+      strokeColor = 'black';
+      break;
+    case 'Sonstige':
+      fillColor = 'rgba(27, 117, 0, .8)';
+      strokeColor = 'black';
+      break;
+    default:
+      fillColor = 'grey';
+      strokeColor = 'grey';
+  }
+
+  return new ol.style.Style({
+    image: new ol.style.Circle({
+      fill: new ol.style.Fill({
+        color: fillColor
+      }),
+      stroke: new ol.style.Stroke({
+        color: strokeColor,
+        width: 0.5
+      }),
+      radius: 7
+    })
+  });
+}
+
 //Berechnung Style für FSK
- function getStyleForArt(feature) {
+ function getStyleForArtFSK(feature) {
   const artValue = feature.get('Art');
   let fillColor, strokeColor;
 
@@ -133,9 +196,30 @@ var map = new ol.Map({
 var exp_allgm_fsk_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'fsk', // Titel für den Layer-Switcher
-  style: getStyleForArt,
+  style: getStyleForArtFSK,
   visible: false
 })
+
+// sonstige Punkte
+var exp_bw_son_pun_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'son_pun', // Titel für den Layer-Switcher
+  style: son_punStyle,
+  visible: false
+});
+
+
+// ein
+var exp_bw_ein_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'ein', // Titel für den Layer-Switcher
+  style: getStyleForArtEin,
+  visible: false
+});
 
 // que
 var exp_bw_que_layer = new ol.layer.Vector({
@@ -434,6 +518,7 @@ var gnAtlas1937 = new ol.layer.Tile({
   visible: false,
 });
 
+
 var ESRIWorldImagery = new ol.layer.Tile({
   title: 'ESRI',
   type: 'base',
@@ -473,7 +558,7 @@ var layerGroup = new ol.layer.Group({
   title: "Bauwerke",
   fold: true,
   fold: 'close',  
-  layers: [exp_allgm_fsk_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
+  layers: [exp_allgm_fsk_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
 });
 
 var kmGroup = new ol.layer.Group({

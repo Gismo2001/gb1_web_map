@@ -59,7 +59,7 @@ pointer-events: none;
 }
 
 .ol-popup:before{
-  border-top-color: #cccccc;
+  border-top-color: #4400ff;
   border-width: 11px;
   left: -10px;
   margin-left: -11px;
