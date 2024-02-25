@@ -1,0 +1,18 @@
+{
+  "name": "gb1_web_map",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.1.4"
+  },
+  "dependencies": {
+    "geojson": "^0.5.0",
+    "ol": "latest",
+    "ol-ext": "^4.0.14",
+    "package": "^1.0.1"
+  }
+}
