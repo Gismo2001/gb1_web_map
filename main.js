@@ -1,3 +1,16 @@
+const queStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: .5
+    }),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 2
+  })
+});
+
 const dueStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
@@ -123,6 +136,20 @@ var exp_allgm_fsk_layer = new ol.layer.Vector({
   style: getStyleForArt,
   visible: false
 })
+
+// que
+var exp_bw_que_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_que.geojson' + '?bbox=' + extent.join(',');
+    },
+    strategy: ol.loadingstrategy.bbox
+  }),
+  title: 'que', // Titel für den Layer-Switcher
+  style: queStyle,
+  visible: false
+});
 
 // due
 var exp_bw_due_layer = new ol.layer.Vector({
@@ -446,7 +473,7 @@ var layerGroup = new ol.layer.Group({
   title: "Bauwerke",
   fold: true,
   fold: 'close',  
-  layers: [exp_allgm_fsk_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
+  layers: [exp_allgm_fsk_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
 });
 
 var kmGroup = new ol.layer.Group({
@@ -469,7 +496,7 @@ map.addLayer(kmGroup);
 map.addLayer(gew_layer_layer);
 map.addLayer(layerGroup);
 
-// Erst nachdem die Gruppen erstellt wurden, kann der LayerSwitcher hinzugefügt werden
+// Layerswitcher
 var myLayerSwitcher = new LayerSwitcher({
   tipLabel: 'Layerliste', // Tooltips für den gesamten Layer-Switcher
   activationMode: "click",
@@ -478,7 +505,6 @@ var myLayerSwitcher = new LayerSwitcher({
   groupCounter: false,
   reverse: true,
   toggleAll: "group",
-  
 });
 
 map.addControl(myLayerSwitcher);
@@ -505,14 +531,19 @@ closer.onclick = function()
   return false;
 };
 
-// ...
+// 
 map.on('click', function (evt) {
- 
-   
   var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
     var layname = layer.get('title');
     console.log(layname);
     var coordinates = evt.coordinates;
+    var beschreibLangValue = feature.get('beschreib_lang');
+    var beschreibLangHtml = '';
+
+    if (beschreibLangValue && beschreibLangValue.trim() !== '') {
+      // Wenn beschreib_lang einen Wert hat, füge es zum HTML-Code hinzu
+      beschreibLangHtml = '<br>' + "Beschreib lang = " + beschreibLangValue + '</p>';
+    };
 
     // Popup soll nur für bestimmte Layernamen angezeigt werden
     if (layname !== 'gew' && layname !== 'km10scal' && layname !== 'km100scal' && layname !== 'km500scal' && layname !== 'fsk') {
@@ -523,21 +554,21 @@ map.on('click', function (evt) {
         // HTML-Tag
         content.innerHTML =
           '<div style="max-height: 200px; overflow-y: auto;">' + // Setzen Sie hier die maximale Höhe ein, die Sie möchten
-          '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('Name') + '</p>' +
-
-          '<p>' + "Id = " + feature.get('bw_id') + '</p>' +
-          '<p><a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
-          '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 2</a> ' +
-          '<a href="' + feature.get('foto3') + '" onclick="window.open(\'' + feature.get('foto3') + '\', \'_blank\'); return false;">Foto 3</a> ' +
-          '<a href="' + feature.get('foto4') + '" onclick="window.open(\'' + feature.get('foto4') + '\', \'_blank\'); return false;">Foto 4</a></p>' +
-          '<br>' +
-          "Beschreibung = " + feature.get('beschreib_lang') + '</p>' +
+            '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('Name') + '</p>' +
+            '<p>' + "Id = " + feature.get('bw_id') + '</p>' +
+            '<p><a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
+            '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 2</a> ' +
+            '<a href="' + feature.get('foto3') + '" onclick="window.open(\'' + feature.get('foto3') + '\', \'_blank\'); return false;">Foto 3</a> ' +
+            '<a href="' + feature.get('foto4') + '" onclick="window.open(\'' + feature.get('foto4') + '\', \'_blank\'); return false;">Foto 4</a></p>' +
+            '<br>' + "Beschreib kurz = " + feature.get('Beschreib') + '</p>' +
+            beschreibLangHtml +
           '</div>';
         // '<p>' + "Stauziel (Winter) = " + feature.get('Ziel_OW1') + " m NN" + '</p>';
       } else {
         popup.setPosition(undefined);
       }
     }
+
     // Führen Sie Aktionen für den Layernamen 'weh' durch
     if (layname === 'fsk') {
       coordinates = evt.coordinate; // Define coordinates for 'fsk'
@@ -547,11 +578,8 @@ map.on('click', function (evt) {
         '<h3>' + feature.get('Suche') + '</h3>' +
         '<p>' + "Eigentümer = " + feature.get('Eig1') + '</p>' +
         '</div>';
-        
-      }
-    },
-   
-  );
+    }
+  });
 });
 
 // ...
