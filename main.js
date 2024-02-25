@@ -1,6 +1,3 @@
-// Vor Ihrer searchAddress-Funktion in main.js
-
-
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
@@ -28,7 +25,12 @@ window.searchAddress = function searchAddress() {
       });
 }
 
-
+const son_linStyle = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+    color: 'rgba(209, 32, 253, 1)',
+    width: 2,
+  }),
+});
 
 const son_punStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
@@ -233,6 +235,16 @@ var exp_allgm_fsk_layer = new ol.layer.Vector({
 })
 
 // sonstige Punkte
+var exp_bw_son_lin_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_bw_son_lin.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'son_lin', // Titel für den Layer-Switcher
+  style: son_linStyle,
+  visible: false
+});
+
+// sonstige Punkte
 var exp_bw_son_pun_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
   format: new ol.format.GeoJSON(),
@@ -241,7 +253,6 @@ var exp_bw_son_pun_layer = new ol.layer.Vector({
   style: son_punStyle,
   visible: false
 });
-
 
 // ein
 var exp_bw_ein_layer = new ol.layer.Vector({
@@ -590,7 +601,7 @@ var layerGroup = new ol.layer.Group({
   title: "Bauwerke",
   fold: true,
   fold: 'close',  
-  layers: [exp_allgm_fsk_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
+  layers: [exp_allgm_fsk_layer, exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
 });
 
 var kmGroup = new ol.layer.Group({
@@ -661,6 +672,13 @@ map.on('click', function (evt) {
       // Wenn beschreib_lang einen Wert hat, füge es zum HTML-Code hinzu
       beschreibLangHtml = '<br>' + "Beschreib lang = " + beschreibLangValue + '</p>';
     };
+
+    if (beschreibLangValue && beschreibLangValue.trim() !== '') {
+      // Wenn beschreib_lang einen Wert hat, füge es zum HTML-Code hinzu
+      beschreibLangHtml = '<br>' + "Beschreib lang = " + beschreibLangValue + '</p>';
+    };
+
+    
 
     // Popup soll nur für bestimmte Layernamen angezeigt werden
     if (layname !== 'gew' && layname !== 'km10scal' && layname !== 'km100scal' && layname !== 'km500scal' && layname !== 'fsk') {
