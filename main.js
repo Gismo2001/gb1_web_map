@@ -1,6 +1,38 @@
+// Vor Ihrer searchAddress-Funktion in main.js
+
+
+// Funktion zur Adresssuche
+window.searchAddress = function searchAddress() {
+  var address = document.getElementById('addressInput').value;
+
+  // Geokodierung durchführen (Nominatim - OpenStreetMap)
+  var apiUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address);
+
+  fetch(apiUrl)
+      .then(function (response) {
+          return response.json();
+      })
+      .then(function (data) {
+          if (data.length > 0) {
+              var location = data[0];
+
+              // Karte auf die gefundenen Koordinaten zentrieren
+              map.getView().setCenter(ol.proj.fromLonLat([parseFloat(location.lon), parseFloat(location.lat)]));
+              map.getView().setZoom(17); // Zoom-Level anpassen
+          } else {
+              console.error('Adresse nicht gefunden');
+          }
+      })
+      .catch(function (error) {
+          console.error('Geokodierung-Fehler:', error);
+      });
+}
+
+
+
 const son_punStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
-    fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1)' }),
     stroke: new ol.style.Stroke({
       color: 'black',
       width: 2
@@ -13,7 +45,7 @@ const son_punStyle = new ol.style.Style({
 
 const einStyle = new ol.style.Style({
   image: new ol.style.Circle({
-    fill: new ol.style.Fill({ color: 'rgba(209, 32, 253, 1)'}), // Füge die benötigte Opazität (alpha) hinzu
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1)'}), 
     stroke: new ol.style.Stroke({
       color: 'black',
       width: 0.5
@@ -24,7 +56,7 @@ const einStyle = new ol.style.Style({
 
 const queStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
-    fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1'}),
     stroke: new ol.style.Stroke({
       color: 'black',
       width: .5
@@ -37,7 +69,7 @@ const queStyle = new ol.style.Style({
 
 const dueStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
-    fill: new ol.style.Fill({color: 'rgba(209, 32, 253'}),
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1'}),
     stroke: new ol.style.Stroke({
       color: 'black',
       width: 2
@@ -73,7 +105,7 @@ const bru_nlwknStyle = new ol.style.Style({
 
 const bru_andereStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
-    fill: new ol.style.Fill({color: 'rgba(100, 100, 100, 1)'}),
+    fill: new ol.style.Fill({color:'rgba(100, 100, 100, 1)'}),
     stroke: new ol.style.Stroke({color: 'grey',width: 1}),
     points: 4,
     radius: 6,
