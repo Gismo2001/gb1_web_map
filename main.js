@@ -1,5 +1,4 @@
 import { getStyleForArtEin, getStyleForArtFSK, son_linStyle, son_punStyle, queStyle, dueStyle, wehStyle, bru_nlwknStyle, bru_andereStyle, sleStyle, km10scalStyle } from './mystyles.js';
-import {Fill, Icon, Style} from 'ol/style';
 
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
