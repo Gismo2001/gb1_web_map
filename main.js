@@ -1,9 +1,7 @@
-// Importieren Sie erforderliche OpenLayers-Module
-import VectorSource from 'ol/source/Vector';
-import Feature from 'ol/Feature';
 
 // Definieren Sie die Vektorquelle
-const source = new VectorSource();
+const source = new ol.source.Vector();
+
 
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
@@ -745,7 +743,9 @@ navigator.geolocation.watchPosition(
       new Feature({
         geometry: circularPolygon.transform('EPSG:4326', map.getView().getProjection()),
       }),
-      new Feature(new ol.geom.Point(ol.proj.fromLonLat(coords))),
+      new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(coords))),
+
+      
     ]);
   },
   function (error) {
