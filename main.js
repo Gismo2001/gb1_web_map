@@ -1,7 +1,20 @@
+import { test } from './meineDatei.js';
+
+const compassStyle = new ol.style.Style({
+  fill: new ol.style.Fill({
+    color: 'rgba(0, 0, 255, 0.2)',
+  }),
+  image: new ol.style.Icon({
+    src: './data/location-heading.svg',
+    imgSize: [27, 55],
+    rotateWithView: true,
+  }),
+});
+//ol.layer.setStyle(compassStyle);
+
 
 // Definieren Sie die Vektorquelle
 const source = new ol.source.Vector();
-
 
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
@@ -231,6 +244,10 @@ var map = new ol.Map({
 });
 //////////////
 
+const mapProjection = map.getView().getProjection();
+console.log(mapProjection.getCode());
+
+
 //FSK Layer
 var exp_allgm_fsk_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
@@ -265,7 +282,7 @@ var exp_bw_ein_layer = new ol.layer.Vector({
   format: new ol.format.GeoJSON(),
   url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'ein', // Titel für den Layer-Switcher
-  style: getStyleForArtEin,
+  style: test,
   visible: false
 });
 
@@ -729,6 +746,7 @@ document.getElementById('popup-closer').onclick = function () {
   return false;
 };
 
+
 navigator.geolocation.watchPosition(
   function (pos) {
     const coords = [pos.coords.longitude, pos.coords.latitude];
@@ -741,7 +759,7 @@ navigator.geolocation.watchPosition(
     source.clear(true);
     source.addFeatures([
       new ol.Feature({
-        geometry: circularPolygon.transform('EPSG:3857', map.getView().getProjection()),
+        geometry: circularPolygon.transform('EPSG:4326', map.getView().getProjection()),
       }),
       new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(coords))),
 
@@ -772,3 +790,4 @@ map.addControl(
     element: locate,
   })
 );
+
