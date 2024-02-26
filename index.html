@@ -26,9 +26,39 @@
         z-index: 1000; /* Stellen Sie sicher, dass das Suchfeld über der Karte liegt */
       }
     </style>
+     <style>
+      #notification {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #fff;
+        padding: 10px;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+  
+      #notification p {
+        margin: 0;
+      }
+  
+      #retryButton {
+        cursor: pointer;
+        color: #007bff;
+        text-decoration: underline;
+      }
+    </style>
     <title>GB1 Web Map</title>
   </head>
   <body>
+    
+    <div id="notification">
+      <p>Es gab einen Fehler bei der Standortbestimmung.</p>
+      <p>Möchten Sie es erneut versuchen? <span id="retryButton">Erneut versuchen</span></p>
+    </div>
+
     <div id="searchBox">
       <input type="text" id="addressInput" placeholder="Adresse eingeben"/>
       <button onclick="searchAddress()">Suchen</button>
