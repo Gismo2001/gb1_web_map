@@ -1,3 +1,10 @@
+// Importieren Sie erforderliche OpenLayers-Module
+import VectorSource from 'ol/source/Vector';
+import Feature from 'ol/Feature';
+
+// Definieren Sie die Vektorquelle
+const source = new VectorSource();
+
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
@@ -723,3 +730,45 @@ document.getElementById('popup-closer').onclick = function () {
   popup.setPosition(undefined);
   return false;
 };
+
+navigator.geolocation.watchPosition(
+  function (pos) {
+    const coords = [pos.coords.longitude, pos.coords.latitude];
+    const accuracy = pos.coords.accuracy;
+
+    // Create a circle geometry using OpenLayers
+    const circle = new ol.geom.Circle(ol.proj.fromLonLat(coords), accuracy);
+    const circularPolygon = ol.geom.Polygon.fromCircle(circle, 64); // 64 segments for a smoother circle
+
+    source.clear(true);
+    source.addFeatures([
+      new Feature({
+        geometry: circularPolygon.transform('EPSG:4326', map.getView().getProjection()),
+      }),
+      new Feature(new ol.geom.Point(ol.proj.fromLonLat(coords))),
+    ]);
+  },
+  function (error) {
+    alert(`ERROR: ${error.message}`);
+  },
+  {
+    enableHighAccuracy: true,
+  }
+);
+
+const locate = document.createElement('div');
+locate.className = 'ol-control ol-unselectable locate';
+locate.innerHTML = '<button title="Locate me">◎</button>';
+locate.addEventListener('click', function () {
+  if (!source.isEmpty()) {
+    map.getView().fit(source.getExtent(), {
+      maxZoom: 18,
+      duration: 500,
+    });
+  }
+});
+map.addControl(
+  new ol.control.Control({
+    element: locate,
+  })
+);
