@@ -741,7 +741,7 @@ navigator.geolocation.watchPosition(
     source.clear(true);
     source.addFeatures([
       new ol.Feature({
-        geometry: circularPolygon.transform('EPSG:4326', map.getView().getProjection()),
+        geometry: circularPolygon.transform('EPSG:3857', map.getView().getProjection()),
       }),
       new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(coords))),
 
