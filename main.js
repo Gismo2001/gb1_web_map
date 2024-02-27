@@ -1,43 +1,82 @@
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
-
-  // Geokodierung durchführen (Nominatim - OpenStreetMap)
   var apiUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address);
 
   fetch(apiUrl)
-      .then(function (response) {
-          return response.json();
-      })
-      .then(function (data) {
-          if (data.length > 0) {
-              var location = data[0];
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      if (data.length > 0) {
+        var location = data[0];
+        // Karte auf die gefundenen Koordinaten zentrieren
+        map.getView().setCenter(ol.proj.fromLonLat([parseFloat(location.lon), parseFloat(location.lat)]));
+        map.getView().setZoom(17); // Zoom-Level anpassen
 
-              // Karte auf die gefundenen Koordinaten zentrieren
-              map.getView().setCenter(ol.proj.fromLonLat([parseFloat(location.lon), parseFloat(location.lat)]));
-              map.getView().setZoom(17); // Zoom-Level anpassen
-          } else {
-              console.error('Adresse nicht gefunden');
-          }
-      })
-      .catch(function (error) {
-          console.error('Geokodierung-Fehler:', error);
-      });
+        // Temporären Marker hinzufügen
+        addTempMarker([parseFloat(location.lon), parseFloat(location.lat)]);
+      } else {
+        // Adresse nicht gefunden, Meldung ausgeben
+        alert('Adresse nicht gefunden');
+      }
+    })
+    .catch(function (error) {
+      console.error('Geokodierung-Fehler:', error);
+    });
 }
+
+// Event-Listener für die Enter-Taste hinzufügen
+var inputElement = document.getElementById('addressInput');
+inputElement.addEventListener('keydown', function (event) {
+  if (event.key === 'Enter') {
+    searchAddress();
+  }
+});
+
+// Funktion zum Hinzufügen eines temporären Markers
+function addTempMarker(coordinates) {
+  var tempMarker = new ol.layer.Vector({
+    source: new ol.source.Vector({
+      features: [new ol.Feature({
+        geometry: new ol.geom.Point(coordinates),
+      })]
+    }),
+    style: new ol.style.Style({
+      image: new ol.style.Icon({
+        src: './data/marker1.jpg',
+        scale: 1 // Skalieren Sie die Größe des Icons nach Bedarf
+      })
+    })
+  });
+
+  // Fügen Sie den temporären Marker zur Karte hinzu
+  map.addLayer(tempMarker);
+}
+
+// Funktion zum Entfernen des temporären Markers
+function removeTempMarker() {
+  // Durchlaufen Sie alle Karten-Layer und entfernen Sie alle, die als temporärer Marker markiert sind
+  map.getLayers().getArray().forEach(function (layer) {
+    if (layer.get('tempMarker')) {
+      map.removeLayer(layer);
+    }
+  });
+}
+
 
 var attribution = new ol.control.Attribution({
   collapsible: false
 });
-
 
 const son_linStyle = new ol.style.Style({
   stroke: new ol.style.Stroke({
     color: 'rgba(209, 32, 253, 1)',
     width: 2,
   }),
-  });
+});
   
-  const son_punStyle = new ol.style.Style({
+const son_punStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1)' }),
     stroke: new ol.style.Stroke({
@@ -48,9 +87,9 @@ const son_linStyle = new ol.style.Style({
     radius: 7,
     angle: Math.PI / 4
   })
-  });
+});
   
-  const queStyle = new ol.style.Style({
+const queStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1'}),
     stroke: new ol.style.Stroke({
@@ -61,9 +100,9 @@ const son_linStyle = new ol.style.Style({
     radius: 7,
     angle: Math.PI / 2
   })
-  });
+});
   
-  const dueStyle = new ol.style.Style({
+const dueStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1'}),
     stroke: new ol.style.Stroke({
@@ -74,9 +113,9 @@ const son_linStyle = new ol.style.Style({
     radius: 7,
     angle: Math.PI / 4
   })
-  });
+});
   
-  const wehStyle = new ol.style.Style({
+const wehStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color: 'green'}),
     stroke: new ol.style.Stroke({
@@ -87,9 +126,9 @@ const son_linStyle = new ol.style.Style({
     radius: 7,
     rotation: 0  // Setzen Sie die Rotation auf 0 für ein Dreieck
   })
-  });
+});
   
-  const bru_nlwknStyle = new ol.style.Style({
+const bru_nlwknStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color: 'blue'}),
     stroke: new ol.style.Stroke({color: 'grey', width: 1}),
@@ -97,9 +136,9 @@ const son_linStyle = new ol.style.Style({
     radius: 7,
     angle: Math.PI / 4
   })
-  });
+});
   
-  const bru_andereStyle = new ol.style.Style({
+const bru_andereStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color:'rgba(100, 100, 100, 1)'}),
     stroke: new ol.style.Stroke({color: 'grey',width: 1}),
@@ -107,9 +146,9 @@ const son_linStyle = new ol.style.Style({
     radius: 6,
     angle: Math.PI / 4
   })
-  });
+});
   
-  const sleStyle = new ol.style.Style({
+const sleStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color: 'red'}),
     stroke: new ol.style.Stroke({
@@ -120,14 +159,14 @@ const son_linStyle = new ol.style.Style({
     radius: 7,
     angle: Math.PI / 4
   })
-  });
+});
   
-  const km10scalStyle = new ol.style.Style({
+const km10scalStyle = new ol.style.Style({
   stroke: new ol.style.Stroke({
     color: 'grey',
     width: .5
   })
-  });
+});
    
 function getStyleForArtEin(feature) {   
   const artValue = feature.get('Ein_ord');
@@ -175,15 +214,15 @@ let fillColor, strokeColor;
 
 switch (artValue) {
   case 'p':
-    fillColor = 'rgba(200, 200, 200, .7)';
-    strokeColor = 'grey';
+    fillColor = 'rgba(200, 200, 200, .6)';
+    strokeColor = 'black';
     break;
   case 'o':
-    fillColor = 'rgba(255, 220, 220, .7)';
-    strokeColor = 'grey';
+    fillColor = 'rgba(255, 220, 220, .6)';
+    strokeColor = 'black';
     break;
   case 'l':
-    fillColor = 'rgba(255, 190, 150, .7)';
+    fillColor = 'rgba(255, 190, 150, .6)';
     strokeColor = 'black';
     break;
   default:
@@ -202,7 +241,6 @@ return new ol.style.Style({
 });
 }
 
-
 ///////////////
 var mapView = new ol.View({
   center: ol.proj.fromLonLat([7.2930, 52.6910]),
@@ -216,12 +254,13 @@ var map = new ol.Map({
 });
 //////////////
 
-
-var exp_allgm_fsk_layer = new ol.layer.Vector({
+const exp_allgm_fsk_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'fsk', // Titel für den Layer-Switcher
   style: getStyleForArtFSK,
-  visible: false
+  visible: false,
+  minResolution: 0,
+  maxResolution: 5
 })
 
 // sonstige Punkte
@@ -312,16 +351,8 @@ var exp_bw_bru_andere_layer = new ol.layer.Vector({
   visible: false
 });
 
-//kilometrierung 10 m
-var km10scal_layer = new ol.layer.Vector({
-  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_10_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
-  title: 'km10scal', // Titel für den Layer-Switcher
-  style: km10scalStyle,
-  visible: true
-});
-
 //sle
-var exp_bw_sle_layer = new ol.layer.Vector({
+const exp_bw_sle_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
     format: new ol.format.GeoJSON(),
     url: function (extent) {
@@ -334,6 +365,16 @@ var exp_bw_sle_layer = new ol.layer.Vector({
   visible: true
 });
 
+//kilometrierung 10 m
+var km10scal_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_10_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'km10scal', // Titel für den Layer-Switcher
+  style: km10scalStyle,
+  visible: true,
+  minResolution: 0,
+  maxResolution: 1 
+});
+
 
 //kilometrierung 100 m
 var km100scal_layer = new ol.layer.Vector({
@@ -342,13 +383,15 @@ var km100scal_layer = new ol.layer.Vector({
   style: function(feature, resolution) {
     return km100scalStyle(feature, feature.get('TextString'), resolution);
   },
-  visible: true
+  visible: true,
+  minResolution: 0,
+  maxResolution: 3 
 });
 
 // km 100 Style-Funktion mit Beschriftung
 var km100scalStyle = function(feature, text, resolution) {
   var minResolution = 0;
-  var maxResolution = 1; 
+  var maxResolution = 5; 
   if (resolution > minResolution && resolution < maxResolution) {
     return new ol.style.Style({
       text: new ol.style.Text({
@@ -377,7 +420,9 @@ var km500scal_layer = new ol.layer.Vector({
   style: function(feature, resolution) {
     return km500scalStyle(feature, feature.get('TextString'), resolution);
   },
-  visible: true
+  visible: true,
+  minResolution: 0,
+  maxResolution: 10 
 });
 
 // Style-Funktion mit Beschriftung
@@ -406,9 +451,6 @@ var gew_layer_layer = new ol.layer.Vector({
   })
 })
 
-
-
-
 // Hintergrundlayer (BaseLayer)
 var dop20ni_layer = new ol.layer.Tile({
   title: "DOP20 NI",
@@ -416,7 +458,7 @@ var dop20ni_layer = new ol.layer.Tile({
   type: 'base',
   source: new ol.source.TileWMS({
     url: "https://www.geobasisdaten.niedersachsen.de/doorman/noauth/wms_ni_dop",
-    attributions: ' ',
+    attributions: 'Orthophotos Niedersachsen, LGLN',
     params: {
       "LAYERS": "dop20",
       "TILED": true, // "true" sollte ohne Anführungszeichen sein
@@ -592,11 +634,11 @@ var BaseGroup = new ol.layer.Group({
   layers: [ emptyBaseLayer, ESRIWorldImagery, dop20ni_layer, googleLayer, osmTile]
 });
 
-var layerGroup = new ol.layer.Group({
+var BwGroup = new ol.layer.Group({
   title: "Bauwerke",
   fold: true,
   fold: 'close',  
-  layers: [exp_allgm_fsk_layer, exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
+  layers: [exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
 });
 
 var kmGroup = new ol.layer.Group({
@@ -610,15 +652,17 @@ var satteliteGroup = new ol.layer.Group({
   title: "GN Atlas",
   fold: true,
   fold: 'close',
+  visible: false,
   layers: [ gnAtlas2023, gnAtlas2020, gnAtlas2017, gnAtlas2014, gnAtlas2012, gnAtlas2010, gnAtlas2009, gnAtlas2002, gnAtlas1970, gnAtlas1957, gnAtlas1937]
 });
 
 
 map.addLayer(BaseGroup);
-map.addLayer(kmGroup);
-map.addLayer(gew_layer_layer);
 map.addLayer(satteliteGroup);
-map.addLayer(layerGroup);
+map.addLayer(exp_allgm_fsk_layer);
+map.addLayer(gew_layer_layer);
+map.addLayer(kmGroup);
+map.addLayer(BwGroup);
 
 // Layerswitcher
 var myLayerSwitcher = new LayerSwitcher({
