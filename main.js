@@ -1,4 +1,4 @@
-import {exp_allgm_fsk_layer, exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer,exp_bw_sle_layer,km10scal_layer,km100scal_layer,km500scal_layer,gew_layer_layer} from "./myLayersIn"
+
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
@@ -29,6 +29,179 @@ window.searchAddress = function searchAddress() {
 var attribution = new ol.control.Attribution({
   collapsible: false
 });
+ 
+
+const son_linStyle = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+    color: 'rgba(209, 32, 253, 1)',
+    width: 2,
+  }),
+  });
+  
+  const son_punStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1)' }),
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: 2
+    }),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 4
+  })
+  });
+  
+  const queStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1'}),
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: .5
+    }),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 2
+  })
+  });
+  
+  const dueStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1'}),
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: 2
+    }),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 4
+  })
+  });
+  
+  const wehStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color: 'green'}),
+    stroke: new ol.style.Stroke({
+      color: 'black',
+      width: 2
+    }),
+    points: 3,
+    radius: 7,
+    rotation: 0  // Setzen Sie die Rotation auf 0 für ein Dreieck
+  })
+  });
+  
+  const bru_nlwknStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color: 'blue'}),
+    stroke: new ol.style.Stroke({color: 'grey', width: 1}),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 4
+  })
+  });
+  
+  const bru_andereStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color:'rgba(100, 100, 100, 1)'}),
+    stroke: new ol.style.Stroke({color: 'grey',width: 1}),
+    points: 4,
+    radius: 6,
+    angle: Math.PI / 4
+  })
+  });
+  
+  const sleStyle = new ol.style.Style({
+  image: new ol.style.RegularShape({
+    fill: new ol.style.Fill({color: 'red'}),
+    stroke: new ol.style.Stroke({
+      color: 'grey',
+      width: 2
+    }),
+    points: 4,
+    radius: 7,
+    angle: Math.PI / 4
+  })
+  });
+  
+  const km10scalStyle = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+    color: 'grey',
+    width: .5
+  })
+  });
+   
+function getStyleForArtEin(feature) {   
+  const artValue = feature.get('Ein_ord');
+  let fillColor, strokeColor;
+  switch (artValue) {
+      case '1. Ordnung':
+        fillColor = 'rgba(0, 68, 255, .8)';
+        strokeColor = 'black';
+        break;
+      case '2. Ordnung':
+        fillColor = 'rgba(214, 0, 0, .8)';
+        strokeColor = 'black';
+        break;
+      case '3. Ordnung':
+        fillColor = 'rgba(114, 114, 114, .8)';
+        strokeColor = 'black';
+        break;
+      case 'Sonstige':
+        fillColor = 'rgba(27, 117, 0, .8)';
+        strokeColor = 'black';
+        break;
+      default:
+        fillColor = 'grey';
+        strokeColor = 'grey';
+    }
+    return new ol.style.Style({
+      image: new ol.style.Circle({
+          fill: new ol.style.Fill({
+            color: fillColor
+          }),
+          stroke: new ol.style.Stroke({
+            color: strokeColor,
+            width: 0.5
+          }),
+          radius: 7
+        })
+      
+    })
+}
+
+//Berechnung Style für FSK
+function getStyleForArtFSK(feature) {
+const artValue = feature.get('Art');
+let fillColor, strokeColor;
+
+switch (artValue) {
+  case 'p':
+    fillColor = 'rgba(200, 200, 200, .7)';
+    strokeColor = 'grey';
+    break;
+  case 'o':
+    fillColor = 'rgba(255, 220, 220, .7)';
+    strokeColor = 'grey';
+    break;
+  case 'l':
+    fillColor = 'rgba(255, 190, 150, .7)';
+    strokeColor = 'black';
+    break;
+  default:
+    fillColor = 'rgba(255, 255, 255, 1)';
+    strokeColor = 'grey';
+}
+
+return new ol.style.Style({
+  fill: new ol.style.Fill({
+    color: fillColor
+  }),
+  stroke: new ol.style.Stroke({
+    color: strokeColor,
+    width: 0.5
+  })
+});
+}
 
 ///////////////
 var mapView = new ol.View({
@@ -42,6 +215,197 @@ var map = new ol.Map({
   controls: ol.control.defaults().extend([attribution])
 });
 //////////////
+
+
+var exp_allgm_fsk_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'fsk', // Titel für den Layer-Switcher
+  style: getStyleForArtFSK,
+  visible: false
+})
+
+// sonstige Punkte
+var exp_bw_son_lin_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_bw_son_lin.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'son_lin', // Titel für den Layer-Switcher
+  style: son_linStyle,
+  visible: false
+});
+
+// sonstige Punkte
+var exp_bw_son_pun_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'son_pun', // Titel für den Layer-Switcher
+  style: son_punStyle,
+  visible: false
+});
+
+// ein
+var exp_bw_ein_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'ein', // Titel für den Layer-Switcher
+  style: getStyleForArtEin,
+  visible: false
+});
+
+// que
+var exp_bw_que_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_que.geojson' + '?bbox=' + extent.join(',');
+    },
+    strategy: ol.loadingstrategy.bbox
+  }),
+  title: 'que', // Titel für den Layer-Switcher
+  style: queStyle,
+  visible: false
+});
+
+// due
+var exp_bw_due_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_due.geojson' + '?bbox=' + extent.join(',');
+    },
+    strategy: ol.loadingstrategy.bbox
+  }),
+  title: 'due', // Titel für den Layer-Switcher
+  style: dueStyle,
+  visible: false
+});
+
+// weh
+var exp_bw_weh_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_weh.geojson' + '?bbox=' + extent.join(',');
+    },
+    strategy: ol.loadingstrategy.bbox
+  }),
+  title: 'weh', // Titel für den Layer-Switcher
+  style: wehStyle,
+  visible: false
+});
+
+//sle
+var exp_bw_sle_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_sle.geojson' + '?bbox=' + extent.join(',');
+    },
+    strategy: ol.loadingstrategy.bbox
+  }),
+  title: 'sle', // Titel für den Layer-Switcher
+  style: sleStyle,
+  visible: true
+});
+
+//bru nlwkn
+var exp_bw_bru_nlwkn_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_nlwkn.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'bru_nlwkn', // Titel für den Layer-Switcher
+  style: bru_nlwknStyle,
+  visible: false
+});
+
+//bru andere
+var exp_bw_bru_andere_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_andere.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'bru_andere', // Titel für den Layer-Switcher
+  style: bru_andereStyle,
+  visible: false
+});
+
+//kilometrierung 10 m
+var km10scal_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_10_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'km10scal', // Titel für den Layer-Switcher
+  style: km10scalStyle,
+  visible: true
+});
+
+//kilometrierung 100 m
+var km100scal_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_100_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'km100scal', // Titel für den Layer-Switcher
+  style: function(feature, resolution) {
+    return km100scalStyle(feature, feature.get('TextString'), resolution);
+  },
+  visible: true
+});
+
+// km 100 Style-Funktion mit Beschriftung
+var km100scalStyle = function(feature, text, resolution) {
+  var minResolution = 0;
+  var maxResolution = 1; 
+  if (resolution > minResolution && resolution < maxResolution) {
+    return new ol.style.Style({
+      text: new ol.style.Text({
+        text: text,
+        font: 'normal 18px "Arial Light", "Helvetica Neue Light", Arial, sans-serif',
+        offsetX: -10,
+        offsetY: 10,
+        fill: new ol.style.Fill({
+          color: 'rgba(128, 128, 128, 1)' // Graue Farbe
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#000000',
+          width: 0.25
+        })
+      })
+    });
+  } else {
+    return null;
+  }
+};
+
+//kilometrierung 500 m
+var km500scal_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_500_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'km500scal', // Titel für den Layer-Switcher
+  style: function(feature, resolution) {
+    return km500scalStyle(feature, feature.get('TextString'), resolution);
+  },
+  visible: true
+});
+
+// Style-Funktion mit Beschriftung
+var km500scalStyle = function(feature, text, resolution) {
+  var minResolution = 0;
+  var maxResolution = 10; 
+  if (resolution > minResolution && resolution < maxResolution) {
+    return new ol.style.Style({
+      text: new ol.style.Text({text: text, font: 'normal 20px "Arial Light", "Helvetica Neue Light", Arial, sans-serif', offsetX: -10, offsetY: 10, fill: new ol.style.Fill({color: 'rgba(0, 0, 0, 1)'}),
+      stroke: new ol.style.Stroke({color: '#000000', width: .25 })
+      })
+    });
+  } else {
+    return null;
+  }
+};
+
+//gew Layer
+var gew_layer_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/gew.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'gew', // Titel für den Layer-Switcher
+  name: 'gew',
+  style: new ol.style.Style({
+    fill: new ol.style.Fill({ color: 'rgba(0,28, 240, 0.4)' }),
+    stroke: new ol.style.Stroke({ color: 'blue', width: 2 })
+  })
+})
+
+
 
 // Hintergrundlayer (BaseLayer)
 var dop20ni_layer = new ol.layer.Tile({
@@ -353,48 +717,4 @@ document.getElementById('popup-closer').onclick = function () {
 };
 
 const source = new ol.source.Vector();
-
-navigator.geolocation.watchPosition(
-  function (pos) {
-    const coords = [pos.coords.longitude, pos.coords.latitude];
-    const accuracy = pos.coords.accuracy;
-
-    // Create a circle geometry using OpenLayers
-    const circle = new ol.geom.Circle(ol.proj.fromLonLat(coords), accuracy);
-    const circularPolygon = ol.geom.Polygon.fromCircle(circle, 64); // 64 segments for a smoother circle
-
-    source.clear();
-    source.addFeatures([
-      new ol.Feature({
-        geometry: circularPolygon.transform('EPSG:3857', map.getView().getProjection()),
-      }),
-      new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(coords))),
-    ]);
-  },
-  function (error) {
-    showErrorNotification(error);
-  },
-  {
-    enableHighAccuracy: true,
-  }
-);
-
-const locate = document.createElement('div');
-locate.className = 'ol-control ol-unselectable locate';
-locate.innerHTML = '<button title="Locate me">◎</button>';
-
-locate.addEventListener('click', function () {
-  if (!source.isEmpty()) {
-    map.getView().fit(source.getExtent(), {
-      maxZoom: 18,
-      duration: 500,
-    });
-  }
-});
-
-map.addControl(
-  new ol.control.Control({
-    element: locate,
-  })
-);
 
