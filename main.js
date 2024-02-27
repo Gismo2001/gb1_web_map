@@ -25,7 +25,6 @@ window.searchAddress = function searchAddress() {
       console.error('Geokodierung-Fehler:', error);
     });
 }
-
 // Event-Listener für die Enter-Taste hinzufügen
 var inputElement = document.getElementById('addressInput');
 inputElement.addEventListener('keydown', function (event) {
@@ -33,7 +32,6 @@ inputElement.addEventListener('keydown', function (event) {
     searchAddress();
   }
 });
-
 // Funktion zum Hinzufügen eines temporären Markers
 function addTempMarker(coordinates) {
   var tempMarker = new ol.layer.Vector({
@@ -53,7 +51,6 @@ function addTempMarker(coordinates) {
   // Fügen Sie den temporären Marker zur Karte hinzu
   map.addLayer(tempMarker);
 }
-
 // Funktion zum Entfernen des temporären Markers
 function removeTempMarker() {
   // Durchlaufen Sie alle Karten-Layer und entfernen Sie alle, die als temporärer Marker markiert sind
@@ -243,7 +240,7 @@ return new ol.style.Style({
 
 ///////////////
 var mapView = new ol.View({
-  center: ol.proj.fromLonLat([7.2930, 52.6910]),
+  center: ol.proj.fromLonLat([7.35, 52.7]),
   zoom: 9
 });
 
