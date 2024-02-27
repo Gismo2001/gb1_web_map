@@ -98,11 +98,7 @@ const son_linStyle = new ol.style.Style({
       width: .5
     })
     });
-    
-   
-    
-  
-  
+     
   function getStyleForArtEin(feature) {   
     const artValue = feature.get('Ein_ord');
     let fillColor, strokeColor;

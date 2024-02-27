@@ -1,5 +1,5 @@
 //FSK Layer
-import { getStyleForArtFSK, son_linStyle,getStyleForArtEin, son_punStyle, queStyle, dueStyle, wehStyle, bru_nlwknStyle, bru_andereStyle, sleStyle, km10scalStyle } from "./mystyles"
+import { getStyleForArtFSK, getStyleForArtEin, son_linStyle, son_punStyle, queStyle, dueStyle, wehStyle, bru_nlwknStyle, bru_andereStyle, sleStyle, km10scalStyle } from "./mystyles"
 
 
 var exp_allgm_fsk_layer = new ol.layer.Vector({

@@ -1,4 +1,4 @@
-import { exp_allgm_fsk_layer , exp_bw_son_pun_layer , exp_bw_son_lin_layer, exp_bw_ein_layer, exp_bw_weh_layer, exp_bw_sle_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_bru_nlwkn_layer, exp_bw_bru_andere_layer, gew_layer_layer, km10scal_layer, km100scal_layer , km500scal_layer     } from "./myLayersIn"
+import {exp_allgm_fsk_layer, exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer,exp_bw_sle_layer,km10scal_layer,km100scal_layer,km500scal_layer,gew_layer_layer} from "./myLayersIn"
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
