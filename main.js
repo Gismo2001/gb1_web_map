@@ -1,5 +1,4 @@
-import {exp_bw_sle_layer} from "./importMyLayers"
-import {getStyleForArtFSK, getStyleForArtEin, son_linStyle, son_punStyle, queStyle, dueStyle, wehStyle, bru_nlwknStyle, bru_andereStyle, km10scalStyle } from "./mystyles"
+import {getStyleForArtFSK, getStyleForArtEin, son_linStyle, son_punStyle, queStyle, dueStyle, wehStyle, sleStyle, bru_nlwknStyle, bru_andereStyle, km10scalStyle } from "./mystyles"
 
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
@@ -148,6 +147,21 @@ var km10scal_layer = new ol.layer.Vector({
   style: km10scalStyle,
   visible: true
 });
+
+//sle
+var exp_bw_sle_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_sle.geojson' + '?bbox=' + extent.join(',');
+    },
+    strategy: ol.loadingstrategy.bbox
+  }),
+  title: 'sle', // Titel für den Layer-Switcher
+  style: sleStyle,
+  visible: true
+});
+
 
 //kilometrierung 100 m
 var km100scal_layer = new ol.layer.Vector({
