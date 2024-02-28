@@ -38,6 +38,10 @@ body{
   left: 20px;  /* Anpassen, um die Position horizontal zu verschieben */
   top: -20px; /* Ändere auf eine negative Zahl, um das Popup nach oben zu verschieben */
   min-width: 280px;
+ }
+
+ #popup-content {
+  user-select: text;
 }
 
 .ol-popup:after, .ol-popup:before{
