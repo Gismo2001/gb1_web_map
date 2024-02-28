@@ -748,7 +748,7 @@ map.on('click', function (evt) {
       content.innerHTML =
         '<div style="max-height: 300px; overflow-y: auto;">' + // Setzen Sie hier die maximale Höhe ein, die Sie möchten
         '<h3>' + feature.get('Suche') + '</h3>' +
-        '<p>' + "Eigentümer = " + feature.get('Eig1') + '</p>' +
+        '<p>' + "Art(p=privat) = " + feature.get('Art') + '</p>' +
         '</div>';
     }
   });
