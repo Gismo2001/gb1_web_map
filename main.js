@@ -257,7 +257,7 @@ const exp_allgm_fsk_layer = new ol.layer.Vector({
   style: getStyleForArtFSK,
   visible: false,
   minResolution: 0,
-  maxResolution: 5
+  maxResolution: 4
 })
 
 // sonstige Punkte
@@ -746,10 +746,11 @@ map.on('click', function (evt) {
       coordinates = evt.coordinate; // Define coordinates for 'fsk'
       popup.setPosition(coordinates);
       content.innerHTML =
-        '<div style="max-height: 300px; overflow-y: auto;">' + // Setzen Sie hier die maximale Höhe ein, die Sie möchten
-        '<h3>' + feature.get('Suche') + '</h3>' +
-        '<p>' + "Art(p=privat) = " + feature.get('Art') + '</p>' +
-        '</div>';
+      '<div style="max-height: 300px; overflow-y: auto;">' +
+      '<p><strong>FKS (gemark Flur Flurstück):</strong><br>' + feature.get('Suche') + '</p>' +
+      '<p>FSK: ' + feature.get('fsk') + '</p>' +  // Hier war ein '<p>' zu viel
+      '<p>' + 'Art (p=privat): ' + feature.get('Art') + '</p>' +
+      '</div>';
     }
   });
 });
