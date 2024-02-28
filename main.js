@@ -747,7 +747,7 @@ map.on('click', function (evt) {
       popup.setPosition(coordinates);
       content.innerHTML =
       '<div style="max-height: 300px; overflow-y: auto;">' +
-      '<p><strong>FKS (gemark Flur Flurstück):</strong><br>' + feature.get('Suche') + '</p>' +
+      '<p><strong>gemark Flur Flurstück:</strong><br>' + feature.get('Suche') + '</p>' +
       '<p>FSK: ' + feature.get('fsk') + '</p>' +  // Hier war ein '<p>' zu viel
       '<p>' + 'Art (p=privat): ' + feature.get('Art') + '</p>' +
       '</div>';
