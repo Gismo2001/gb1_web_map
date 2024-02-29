@@ -718,7 +718,7 @@ map.on('click', function (evt) {
     
 
     // Popup soll nur für bestimmte Layernamen angezeigt werden
-    if (layname !== 'gew' && layname !== 'km10scal' && layname !== 'km100scal' && layname !== 'km500scal' && layname !== 'fsk') {
+    if (layname !== 'gew' && layname !== 'km10scal' && layname !== 'km100scal' && layname !== 'km500scal' && layname !== 'fsk' && layname !== 'son_lin') {
       console.log('Clicked on layer:', layname);
       if (feature) {
         coordinates = feature.getGeometry().getCoordinates();
@@ -741,6 +741,22 @@ map.on('click', function (evt) {
       }
     }
 
+    // Führen Sie Aktionen für den Layernamen 'son_lin' durch
+    if (layname === 'son_lin') {
+      coordinates = evt.coordinate; 
+      popup.setPosition(coordinates);
+      content.innerHTML =
+      '<div style="max-height: 300px; overflow-y: auto;">' +
+      '<p>Name: ' + feature.get('Name') + '<br>' +
+      '<p><a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
+      '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 2</a> ' +
+      '<a href="' + feature.get('foto3') + '" onclick="window.open(\'' + feature.get('foto3') + '\', \'_blank\'); return false;">Foto 3</a> ' +
+      '<a href="' + feature.get('foto4') + '" onclick="window.open(\'' + feature.get('foto4') + '\', \'_blank\'); return false;">Foto 4</a></p>' +
+      '<br>' + "Beschreib kurz = " + feature.get('Beschreib') + '</p>' +
+      beschreibLangHtml +
+      '</div>';
+    }
+
     // Führen Sie Aktionen für den Layernamen 'weh' durch
     if (layname === 'fsk') {
       coordinates = evt.coordinate; // Define coordinates for 'fsk'
@@ -752,6 +768,7 @@ map.on('click', function (evt) {
       '<p>' + 'Art (p=privat): ' + feature.get('Art') + '</p>' +
       '</div>';
     }
+
   });
 });
 

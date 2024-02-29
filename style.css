@@ -28,9 +28,10 @@ body{
 }
 
 .ol-popup {
-  position: absolute;
   background-color: rgb(255, 255, 255);
   padding: 5px;
+  padding-top: 25px;
+  position: absolute;
   border-radius: 5px;
   /*box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); */
   border: 1px solid #cccccc;
@@ -74,11 +75,14 @@ pointer-events: none;
   text-decoration: none;
   position: absolute;
   top: 5px;
-  right: 2px;  
+  right: 5px;
+  height: 10px;
+
 }
 
 .ol-popup-closer:after{
-  content: "X"
+  content: "X";
+  font-weight: bold; /* Fett formatieren */
 }
 
 .locate {
