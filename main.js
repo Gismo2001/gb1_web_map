@@ -1,3 +1,5 @@
+import { son_linStyle } from './myStyles';
+
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
@@ -65,14 +67,7 @@ function removeTempMarker() {
 var attribution = new ol.control.Attribution({
   collapsible: false
 });
-
-const son_linStyle = new ol.style.Style({
-  stroke: new ol.style.Stroke({
-    color: 'rgba(209, 32, 253, 1)',
-    width: 2,
-  }),
-});
-  
+ 
 const son_punStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1)' }),
