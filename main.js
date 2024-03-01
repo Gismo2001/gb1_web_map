@@ -1,4 +1,4 @@
-import { son_linStyle } from './myStyles';
+
 
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
@@ -67,7 +67,22 @@ function removeTempMarker() {
 var attribution = new ol.control.Attribution({
   collapsible: false
 });
- 
+
+const gew_infoStyle = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+    color: 'rgba(209, 100, 253, 1)',
+    width: 3
+  }),
+});
+
+const son_linStyle = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+    color: 'rgba(209, 32, 253, 1)',
+    width: 4
+  }),
+});
+
+
 const son_punStyle = new ol.style.Style({
   image: new ol.style.RegularShape({
     fill: new ol.style.Fill({color:'rgba(209, 32, 253, 1)' }),
@@ -255,8 +270,18 @@ const exp_allgm_fsk_layer = new ol.layer.Vector({
   maxResolution: 4
 })
 
-// sonstige Punkte
-var exp_bw_son_lin_layer = new ol.layer.Vector({
+// exp_gew_info
+const exp_gew_info_layer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+  format: new ol.format.GeoJSON(),
+  url: function (extent) {return './myLayers/exp_gew_info.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
+  title: 'gew_info', // Titel für den Layer-Switcher
+  style: gew_infoStyle,
+  visible: false
+});
+
+// sonstige Linien
+const exp_bw_son_lin_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
   format: new ol.format.GeoJSON(),
   url: function (extent) {return './myLayers/exp_bw_son_lin.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
@@ -266,7 +291,7 @@ var exp_bw_son_lin_layer = new ol.layer.Vector({
 });
 
 // sonstige Punkte
-var exp_bw_son_pun_layer = new ol.layer.Vector({
+const exp_bw_son_pun_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
   format: new ol.format.GeoJSON(),
   url: function (extent) {return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
@@ -276,7 +301,7 @@ var exp_bw_son_pun_layer = new ol.layer.Vector({
 });
 
 // ein
-var exp_bw_ein_layer = new ol.layer.Vector({
+const exp_bw_ein_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
   format: new ol.format.GeoJSON(),
   url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
@@ -286,7 +311,7 @@ var exp_bw_ein_layer = new ol.layer.Vector({
 });
 
 // que
-var exp_bw_que_layer = new ol.layer.Vector({
+const exp_bw_que_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
     format: new ol.format.GeoJSON(),
     url: function (extent) {
@@ -300,7 +325,7 @@ var exp_bw_que_layer = new ol.layer.Vector({
 });
 
 // due
-var exp_bw_due_layer = new ol.layer.Vector({
+const exp_bw_due_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
     format: new ol.format.GeoJSON(),
     url: function (extent) {
@@ -314,7 +339,7 @@ var exp_bw_due_layer = new ol.layer.Vector({
 });
 
 // weh
-var exp_bw_weh_layer = new ol.layer.Vector({
+const exp_bw_weh_layer = new ol.layer.Vector({
   source: new ol.source.Vector({
     format: new ol.format.GeoJSON(),
     url: function (extent) {
@@ -328,7 +353,7 @@ var exp_bw_weh_layer = new ol.layer.Vector({
 });
 
 //bru nlwkn
-var exp_bw_bru_nlwkn_layer = new ol.layer.Vector({
+const exp_bw_bru_nlwkn_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_nlwkn.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'bru_nlwkn', // Titel für den Layer-Switcher
   style: bru_nlwknStyle,
@@ -336,7 +361,7 @@ var exp_bw_bru_nlwkn_layer = new ol.layer.Vector({
 });
 
 //bru andere
-var exp_bw_bru_andere_layer = new ol.layer.Vector({
+const exp_bw_bru_andere_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_andere.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'bru_andere', // Titel für den Layer-Switcher
   style: bru_andereStyle,
@@ -358,7 +383,7 @@ const exp_bw_sle_layer = new ol.layer.Vector({
 });
 
 //kilometrierung 10 m
-var km10scal_layer = new ol.layer.Vector({
+const km10scal_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_10_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'km10scal', // Titel für den Layer-Switcher
   style: km10scalStyle,
@@ -369,7 +394,7 @@ var km10scal_layer = new ol.layer.Vector({
 
 
 //kilometrierung 100 m
-var km100scal_layer = new ol.layer.Vector({
+const km100scal_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_100_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'km100scal', // Titel für den Layer-Switcher
   style: function(feature, resolution) {
@@ -381,7 +406,7 @@ var km100scal_layer = new ol.layer.Vector({
 });
 
 // km 100 Style-Funktion mit Beschriftung
-var km100scalStyle = function(feature, text, resolution) {
+const km100scalStyle = function(feature, text, resolution) {
   var minResolution = 0;
   var maxResolution = 5; 
   if (resolution > minResolution && resolution < maxResolution) {
@@ -406,7 +431,7 @@ var km100scalStyle = function(feature, text, resolution) {
 };
 
 //kilometrierung 500 m
-var km500scal_layer = new ol.layer.Vector({
+const km500scal_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/km_500_scal.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'km500scal', // Titel für den Layer-Switcher
   style: function(feature, resolution) {
@@ -418,7 +443,7 @@ var km500scal_layer = new ol.layer.Vector({
 });
 
 // Style-Funktion mit Beschriftung
-var km500scalStyle = function(feature, text, resolution) {
+const km500scalStyle = function(feature, text, resolution) {
   var minResolution = 0;
   var maxResolution = 10; 
   if (resolution > minResolution && resolution < maxResolution) {
@@ -433,7 +458,7 @@ var km500scalStyle = function(feature, text, resolution) {
 };
 
 //gew Layer
-var gew_layer_layer = new ol.layer.Vector({
+const gew_layer_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/gew.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
   title: 'gew', // Titel für den Layer-Switcher
   name: 'gew',
@@ -630,7 +655,7 @@ var BwGroup = new ol.layer.Group({
   title: "Bauwerke",
   fold: true,
   fold: 'close',  
-  layers: [exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
+  layers: [exp_gew_info_layer, exp_bw_son_lin_layer, exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_weh_layer, exp_bw_sle_layer]
 });
 
 var kmGroup = new ol.layer.Group({
@@ -705,13 +730,6 @@ map.on('click', function (evt) {
       beschreibLangHtml = '<br>' + "Beschreib lang = " + beschreibLangValue + '</p>';
     };
 
-    if (beschreibLangValue && beschreibLangValue.trim() !== '') {
-      // Wenn beschreib_lang einen Wert hat, füge es zum HTML-Code hinzu
-      beschreibLangHtml = '<br>' + "Beschreib lang = " + beschreibLangValue + '</p>';
-    };
-
-    
-
     // Popup soll nur für bestimmte Layernamen angezeigt werden
     if (layname !== 'gew' && layname !== 'km10scal' && layname !== 'km100scal' && layname !== 'km500scal' && layname !== 'fsk' && layname !== 'son_lin') {
       console.log('Clicked on layer:', layname);
@@ -735,6 +753,21 @@ map.on('click', function (evt) {
         popup.setPosition(undefined);
       }
     }
+    // Führen Sie Aktionen für den Layernamen 'gew_info' durch
+    if (layname === 'gew_info') {
+      coordinates = evt.coordinate; 
+      popup.setPosition(coordinates);
+      content.innerHTML =
+      '<div style="max-height: 300px; overflow-y: auto;">' +
+      '<p>Name: ' + feature.get('IDUabschn') + '<br>' +
+      '<p><a href="' + feature.get('link1') + '" onclick="window.open(\'' + feature.get('link1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
+      '<a href="' + feature.get('link2') + '" onclick="window.open(\'' + feature.get('link2') + '\', \'_blank\'); return false;">Foto 2</a> ' +
+      '<a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 3</a> ' +
+      '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 4</a></p>' +
+      'Kat ' + feature.get('Kat') + '</a>' +
+      '<br>' + "von = " + feature.get('Bez_Anfang') + " bis " + feature.get('Bez_Ende')  + '</p>' +
+      '</div>';
+    }
 
     // Führen Sie Aktionen für den Layernamen 'son_lin' durch
     if (layname === 'son_lin') {
@@ -752,7 +785,7 @@ map.on('click', function (evt) {
       '</div>';
     }
 
-    // Führen Sie Aktionen für den Layernamen 'weh' durch
+    // Führen Sie Aktionen für den Layernamen 'fsk' durch
     if (layname === 'fsk') {
       coordinates = evt.coordinate; // Define coordinates for 'fsk'
       popup.setPosition(coordinates);
