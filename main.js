@@ -1,5 +1,3 @@
-
-
 // Funktion zur Adresssuche
 window.searchAddress = function searchAddress() {
   var address = document.getElementById('addressInput').value;
@@ -62,7 +60,6 @@ function removeTempMarker() {
     }
   });
 }
-
 
 var attribution = new ol.control.Attribution({
   collapsible: false
@@ -760,10 +757,10 @@ map.on('click', function (evt) {
       content.innerHTML =
       '<div style="max-height: 300px; overflow-y: auto;">' +
       '<p>Name: ' + feature.get('IDUabschn') + '<br>' +
-      '<p><a href="' + feature.get('link1') + '" onclick="window.open(\'' + feature.get('link1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
-      '<a href="' + feature.get('link2') + '" onclick="window.open(\'' + feature.get('link2') + '\', \'_blank\'); return false;">Foto 2</a> ' +
-      '<a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 3</a> ' +
-      '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 4</a></p>' +
+      '<p><a href="' + feature.get('link1') + '" onclick="window.open(\'' + feature.get('link1') + '\', \'_blank\'); return false;">Link 1</a> ' +
+      '<a href="' + feature.get('link2') + '" onclick="window.open(\'' + feature.get('link2') + '\', \'_blank\'); return false;">Link 2</a> ' +
+      '<a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
+      '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 2</a></p>' +
       'Kat ' + feature.get('Kat') + '</a>' +
       '<br>' + "von = " + feature.get('Bez_Anfang') + " bis " + feature.get('Bez_Ende')  + '</p>' +
       '</div>';
