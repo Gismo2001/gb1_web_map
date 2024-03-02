@@ -457,7 +457,7 @@ const km500scalStyle = function(feature, text, resolution) {
 //gew Layer
 const gew_layer_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/gew.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
-  title: 'gew', // Titel für den Layer-Switcher
+  title: 'GEW', // Titel für den Layer-Switcher
   name: 'gew',
   style: new ol.style.Style({
     fill: new ol.style.Fill({ color: 'rgba(0,28, 240, 0.4)' }),
@@ -619,7 +619,7 @@ var wmsHydErstOrdLayer = new ol.layer.Tile({
     params: {"LAYERS": "Gewässernetz_1._Ordnung29778", "TILED": "true", "VERSION": "1.3.0"},
     serverType : 'arcgisserver'
   })),
-  title: "hyd",
+  title: "HYDRO",
   //opacity: 1.000000,
   visible: false,
 });
