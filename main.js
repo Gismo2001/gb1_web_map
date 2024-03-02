@@ -245,11 +245,13 @@ return new ol.style.Style({
 });
 }
 
+
 ///////////////
 const mapView = new ol.View({
   center: ol.proj.fromLonLat([7.1, 52.7]),
   zoom: 9
 });
+//////////////
 
 const map = new ol.Map({
   target: "map",
@@ -257,6 +259,8 @@ const map = new ol.Map({
   controls: ol.control.defaults().extend([attribution])
 });
 //////////////
+
+
 
 const exp_allgm_fsk_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
