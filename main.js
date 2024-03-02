@@ -246,12 +246,12 @@ return new ol.style.Style({
 }
 
 ///////////////
-var mapView = new ol.View({
-  center: ol.proj.fromLonLat([7.35, 52.7]),
+const mapView = new ol.View({
+  center: ol.proj.fromLonLat([7.1, 52.7]),
   zoom: 9
 });
 
-var map = new ol.Map({
+const map = new ol.Map({
   target: "map",
   view: mapView,
   controls: ol.control.defaults().extend([attribution])
@@ -612,7 +612,6 @@ var gnAtlas1937 = new ol.layer.Tile({
   visible: false,
 });
 
-
 var ESRIWorldImagery = new ol.layer.Tile({
   title: 'ESRI',
   type: 'base',
@@ -695,7 +694,6 @@ var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
 var closer = document.getElementById('popup-closer');
 
-
 var popup = new ol.Overlay({
   element: container,//document.getElementById('popup'),
   autoPan: true,
@@ -723,8 +721,7 @@ map.on('click', function (evt) {
     var beschreibLangHtml = '';
 
     if (beschreibLangValue && beschreibLangValue.trim() !== '') {
-      // Wenn beschreib_lang einen Wert hat, füge es zum HTML-Code hinzu
-      beschreibLangHtml = '<br>' + "Beschreib lang = " + beschreibLangValue + '</p>';
+      beschreibLangHtml = '<br>' + '<u>' + "Beschreib (lang): " + '</u>' + beschreibLangValue + '</p>';
     };
 
     // Popup soll nur für bestimmte Layernamen angezeigt werden
@@ -733,19 +730,54 @@ map.on('click', function (evt) {
       if (feature) {
         coordinates = feature.getGeometry().getCoordinates();
         popup.setPosition(coordinates);
-        // HTML-Tag
-        content.innerHTML =
-          '<div style="max-height: 200px; overflow-y: auto;">' + // Setzen Sie hier die maximale Höhe ein, die Sie möchten
-            '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('Name') + '</p>' +
-            '<p>' + "Id = " + feature.get('bw_id') + '</p>' +
-            '<p><a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Foto 1</a> ' +
-            '<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto 2</a> ' +
-            '<a href="' + feature.get('foto3') + '" onclick="window.open(\'' + feature.get('foto3') + '\', \'_blank\'); return false;">Foto 3</a> ' +
-            '<a href="' + feature.get('foto4') + '" onclick="window.open(\'' + feature.get('foto4') + '\', \'_blank\'); return false;">Foto 4</a></p>' +
-            '<br>' + "Beschreib kurz = " + feature.get('Beschreib') + '</p>' +
-            beschreibLangHtml +
+       
+        // HTML-Tag Foto1
+        var foto1Value = feature.get('foto1');
+        var foto1Html = '';
+        
+        var foto2Value = feature.get('foto2');
+        var foto2Html = '';
+        
+        var foto3Value = feature.get('foto3');
+        var foto3Html = '';
+        
+        var foto4Value = feature.get('foto4');
+        var foto4Html = '';
+        
+        if (foto1Value && foto1Value.trim() !== '') {
+          foto1Html = '<a href="' + foto1Value + '" onclick="window.open(\'' + foto1Value + '\', \'_blank\'); return false;">Foto 1</a>';
+        } else {
+          foto1Html =   " Foto 1 ";
+        }
+      
+        if (foto2Value && foto2Value.trim() !== '') {
+          foto2Html = '<a href="' + foto2Value + '" onclick="window.open(\'' + foto2Value + '\', \'_blank\'); return false;">Foto 2</a>';
+        } else {
+          foto2Html = " Foto 2 ";
+        }
+      
+        if (foto3Value && foto3Value.trim() !== '') {
+          foto3Html = '<a href="' + foto3Value + '" onclick="window.open(\'' + foto3Value + '\', \'_blank\'); return false;">Foto 3</a>';
+        } else {
+          foto3Html = " Foto 3 ";
+        }
+      
+        if (foto4Value && foto4Value.trim() !== '') {
+          foto4Html = '<a href="' + foto4Value + '" onclick="window.open(\'' + foto4Value + '\', \'_blank\'); return false;">Foto 4</a>';
+        } else {
+          foto4Html = " Foto 4 ";
+        }
+      
+      content.innerHTML =
+          '<div style="max-height: 200px; overflow-y: auto;">' +
+          '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('Name') + '</p>' +
+          '<p>' + "Id = " + feature.get('bw_id') + '</p>' +
+          '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
+           '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('Beschreib') + '</p>' +
+           '<p>' + beschreibLangHtml + '</p>' +
           '</div>';
-        // '<p>' + "Stauziel (Winter) = " + feature.get('Ziel_OW1') + " m NN" + '</p>';
+      
+        
       } else {
         popup.setPosition(undefined);
       }
