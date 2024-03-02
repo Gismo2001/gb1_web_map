@@ -461,7 +461,7 @@ const km500scalStyle = function(feature, text, resolution) {
 //gew Layer
 const gew_layer_layer = new ol.layer.Vector({
   source: new ol.source.Vector({format: new ol.format.GeoJSON(), url: function (extent) {return './myLayers/gew.geojson' + '?bbox=' + extent.join(','); }, strategy: ol.loadingstrategy.bbox }),
-  title: 'GEW', // Titel für den Layer-Switcher
+  title: 'gew', // Titel für den Layer-Switcher
   name: 'gew',
   style: new ol.style.Style({
     fill: new ol.style.Fill({ color: 'rgba(0,28, 240, 0.4)' }),
@@ -836,13 +836,13 @@ map.on('click', function (evt) {
       coordinates = evt.coordinate; // Define coordinates for 'fsk'
       popup.setPosition(coordinates);
       content.innerHTML =
-      '<div style="max-height: 300px; overflow-y: auto;">' +
+      content.innerHTML =
+     '<div style="max-height: 300px; overflow-y: auto;">' +
       '<p><strong>gemark Flur Flurstück:</strong><br>' + feature.get('Suche') + '</p>' +
-      '<p>FSK: ' + feature.get('fsk') + '</p>' +  // Hier war ein '<p>' zu viel
+      'FSK: ' + feature.get('fsk') + '</p>' +  
       '<p>' + 'Art (p=privat): ' + feature.get('Art') + '</p>' +
       '</div>';
-    }
-
+     }
   });
 });
 
