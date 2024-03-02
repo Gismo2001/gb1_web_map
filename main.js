@@ -615,9 +615,11 @@ var gnAtlas1937 = new ol.layer.Tile({
 
 const wmsHydErstOrdLayer = new ol.layer.Tile({
   source: new ol.source.TileWMS({
-    url: 'https://www.umweltkarten-niedersachsen.de/arcgis/services/Hydro_wms/MapServer/WMSServer',
+    //url: 'https://www.umweltkarten-niedersachsen.de/arcgis/services/Hydro_wms/MapServer/WMSServer',
+    url: 'https://via.bund.de/wsv/bwastr/wms',
     params: {
-      'LAYERS': 'Gewässernetz_1._Ordnung29778',
+      //'LAYERS': 'Gewässernetz_1._Ordnung29778',
+      'LAYERS': 'Gewaessernetz',
       'TILED': true,
       'TRANSPARENT': true,
     },
