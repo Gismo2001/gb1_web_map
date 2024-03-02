@@ -625,7 +625,8 @@ const wmsHydErstOrdLayer = new ol.layer.Tile({
     crossOrigin: 'anonymous',
   }),
   title: 'wmsHydErstOrd',
-  visible: true
+  visible: true,
+  opacity: 0.5,
 });
 
 
