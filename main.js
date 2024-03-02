@@ -603,14 +603,33 @@ var gnAtlas1957 = new ol.layer.Tile({
 
 var gnAtlas1937 = new ol.layer.Tile({
   source: new ol.source.TileWMS(({
-      url: "https://geo.grafschaft.de/arcgis/services/Migratrion_Okt_2020/BAS_Luftbilder_2/MapServer/WMSServer",
-      attributions: ' ',
-     params: {"LAYERS": "0", "TILED": "true", "VERSION": "1.3.0"},
-    })),
+    url: "https://geo.grafschaft.de/arcgis/services/Migratrion_Okt_2020/BAS_Luftbilder_2/MapServer/WMSServer",
+    attributions: ' ',
+    params: {"LAYERS": "0", "TILED": "true", "VERSION": "1.3.0"},
+  })),
   title: "1937",
   opacity: 1.000000,
   visible: false,
 });
+
+
+const wmsHydErstOrdLayer = new ol.layer.Tile({
+  source: new ol.source.TileWMS({
+    url: 'https://www.umweltkarten-niedersachsen.de/arcgis/services/Hydro_wms/MapServer/WMSServer',
+    params: {
+      'LAYERS': 'Gewässernetz_1._Ordnung29778',
+      'TILED': true,
+      'TRANSPARENT': true,
+    },
+    serverType: 'arcgis',
+    crossOrigin: 'anonymous',
+  }),
+  title: 'wmsHydErstOrd',
+  visible: true
+});
+
+
+
 
 var ESRIWorldImagery = new ol.layer.Tile({
   title: 'ESRI',
@@ -644,7 +663,7 @@ var BaseGroup = new ol.layer.Group({
   title: "Hintergrund",
   fold: true,
   fold: 'close',
-  layers: [ emptyBaseLayer, ESRIWorldImagery, dop20ni_layer, googleLayer, osmTile]
+  layers: [emptyBaseLayer, ESRIWorldImagery, dop20ni_layer, googleLayer, osmTile]
 });
 
 var BwGroup = new ol.layer.Group({
@@ -676,6 +695,7 @@ map.addLayer(exp_allgm_fsk_layer);
 map.addLayer(gew_layer_layer);
 map.addLayer(kmGroup);
 map.addLayer(BwGroup);
+map.addLayer(wmsHydErstOrdLayer);
 
 // Layerswitcher
 var myLayerSwitcher = new LayerSwitcher({
