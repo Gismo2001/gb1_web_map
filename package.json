@@ -1,5 +1,5 @@
 {
-  "name": "gb1_web_map",
+  "name": "GB1WebMap",
   "version": "1.0.0",
   "scripts": {
     "start": "vite",
@@ -7,13 +7,17 @@
     "serve": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.1.4"
+    "@babel/core": "^7.26.7",
+    "@babel/preset-react": "^7.26.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "babel-loader": "^9.2.1",
+    "vite": "^5.1.5"
   },
   "dependencies": {
-    "geojson": "^0.5.0",
-    "kompas": "^0.0.1",
-    "ol": "latest",
-    "ol-ext": "^4.0.14",
-    "package": "^1.0.1"
+    "jspdf": "^2.5.1",
+    "kompas": "^0.0.2",
+    "ol": "9.0.0",
+    "ol-ext": "^4.0.17",
+    "proj4": "^2.11.0"
   }
 }
