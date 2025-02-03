@@ -1723,7 +1723,8 @@ var sub2 = new Bar({
  toggleOne: true,
  controls: [
  new TextButton({
-  html: "2.1",
+  html: '<i class="fa fa-map" ></i>',
+  title: "Flurstückssuche",
   handleClick: function () {
     if (currentlyHighlightedFeature) {
       // Wenn ein Feature bereits markiert wurde, hebe die Markierung auf und setze zurück
@@ -1740,6 +1741,7 @@ var sub2 = new Bar({
  }),
  new TextButton({
   html: "2.2",
+  title: "noch nicht belegt",
   handleClick: function () {
    // Aktionen
   }
@@ -1799,7 +1801,8 @@ var sub1 = new Bar({
   toggleOne: true,
   controls:[
     new Toggle({
-      html: "P",
+      html: '<i class="fa fa-map-marker" ></i>',
+      title: "GPS-Position",
       //autoActivate: true,
       onToggle: 
       function () {
@@ -1872,7 +1875,8 @@ var sub1 = new Bar({
 
     }),
     new Toggle({
-      html:"2", 
+      html:'<i class="fa fa-search"></i>', 
+      title: "Suche",
       onToggle: function(b) { 
         //test();
        },
@@ -1886,7 +1890,8 @@ var sub1 = new Bar({
 var mainBar1 = new Bar({
   controls: [
     new Toggle({
-      html: "H",
+      html: '<i class="fa fa-info"></i>',
+      title: "Weitere Funktionen",
       // First level nested control bar
       bar: sub1,
       onToggle: function() { },
