@@ -19,11 +19,18 @@
     <script type="text/javascript" src="https://cdn.rawgit.com/eligrey/FileSaver.js/aa9f4e0e/FileSaver.min.js"></script>
     <script src="myFunc.js"></script> <!-- Einbinden von myFunc.js -->
     
-  <script type="module" crossorigin src="/assets/index-74TrB16K.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-IKrsqiX3.css">
+  <script type="module" crossorigin src="/assets/index-qJOhZT-6.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Czlrn-3y.css">
 </head>
 <body>
   <div id="map" class="map">
+    
+  <div id="search-results-container">
+    <button id="close-search-results" onclick="closeSearchResults()">✖</button>
+    <h3>Suchergebnisse</h3>
+    <ul id="search-results"></ul>
+  </div>
+ 
 <!--   
   <div class="addQueryDiv" id="addQueryDiv">
     <div class="hearderDiv" id="headerDiv">
@@ -85,6 +92,7 @@
     <p>Es gab einen Fehler bei der Standortbestimmung.</p>
     <p>Möchten Sie es erneut versuchen? <span id="retryButton">Erneut versuchen</span></p>
   </div>
+
   
 </div> 
  

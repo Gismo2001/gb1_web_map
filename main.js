@@ -73,6 +73,9 @@ import {
   getStyleForArtGewInfo
 } from './extStyle';
 
+import { UTMToLatLon_Fix } from './myNewFunc';
+
+
 //var popup; // Globale Variable für das Popup
 
 // Funktion zum Verschieben des DIVs
@@ -361,7 +364,7 @@ const wmsWrrlFgLayer = new TileLayer({
       'TILED': true,
     },
   }),
-  visible: true,
+  visible: false,
   opacity: 1,
 });
 const wmsGewWmsFgLayer = new TileLayer({
@@ -376,7 +379,7 @@ const wmsGewWmsFgLayer = new TileLayer({
       'TILED': true,
     },
   }),
-  visible: false,
+  visible: true,
   opacity: 1,
 });
 
@@ -417,7 +420,7 @@ const gnAtlas2017 = new TileLayer({
   })),
   title: "2017_NI",
   opacity: 1.000000,
-  visible: false,
+  visible: true,
 });
 const gnAtlas2014 = new TileLayer({
   source: new TileWMS(({
@@ -848,9 +851,10 @@ const wmsLayerGroup = new LayerGroup({
 });
 const GNAtlasGroup = new LayerGroup({
   title: "Luftbilder",
-  
+  name: "Luftbilder",
   fold: true,
   fold: 'close',
+  visible: false,
   layers: [gnAtlas1937, gnAtlas1957, gnAtlas1970, gnAtlas1980,  gnAtlas1990, gnAtlas2002, gnAtlas2009, gnAtlas2010,gnAtlas2011, gnAtlas2012, gnAtlas2014, gnAtlas2017, gnAtlas2020, gnAtlas2023]
 });
 const kmGroup = new LayerGroup({
@@ -1060,19 +1064,17 @@ var closer = document.getElementById('popup-closer');
 map.on('click', function (evt) {
   if (globalCoordAnOderAus===false ){
     var coordinates = evt.coordinate;
-    var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-    console.log(layer);
-    var layname = layer.get('name');
-    
-    var beschreibLangValue = feature.get('beschreib_lang');
-    var beschreibLangHtml = '';
-    if (beschreibLangValue && beschreibLangValue.trim() !== '') {
-    beschreibLangHtml = '<br>' + '<u>' + "Beschreib (lang): " + '</u>' + beschreibLangValue + '</p>';
-    };
+    var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) 
+    {
+      var layname = layer.get('name');
+      var beschreibLangValue = feature.get('beschreib_lang');
+      var beschreibLangHtml = '';
+      if (beschreibLangValue && beschreibLangValue.trim() !== '') {
+      beschreibLangHtml = '<br>' + '<u>' + "Beschreib (lang): " + '</u>' + beschreibLangValue + '</p>';
+      };
     // Popup soll nur für bestimmte Layernamen angezeigt werden
     if (layname !== 'gew' && layname !== 'km10scal' && layname !== 'km100scal' && layname !== 'km500scal' && layname !== 'fsk' && layname !== 'sle' && layname !== 'weh' && layname !== 'son_lin' && layname !== 'exp_gew_fla' ) {
-      
-      if (feature) {
+        if (feature) {
         coordinates = feature.getGeometry().getCoordinates();
         popup.setPosition(coordinates);
         // HTML-Tag Foto1
@@ -1105,16 +1107,22 @@ map.on('click', function (evt) {
         } else {
           foto4Html = " Foto 4 ";
         }
+        var rwert = feature.get('rwert');
+        var hwert = feature.get('hwert');
+        var result = UTMToLatLon_Fix(rwert, hwert, 32, true);
+
          content.innerHTML =
-          '<div style="max-height: 200px; overflow-y: auto;">' +
-          '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
-          '<p>' + "Id = " + feature.get('bw_id') +  ' (' + (feature.get('KTR') ? feature.get('KTR') : 'k.A.') + ')' +  '</p>' +
-          '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
-          '<p>' + "Bauj. = " + (feature.get('baujahr') ? feature.get('baujahr') : 'k.A.') + '</p>' +
-          '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
-           '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('beschreib') + '</p>' +
-           '<p>' + beschreibLangHtml + '</p>' +
-          '</div>';
+         '<div style="max-height: 200px; overflow-y: auto;">' +
+         '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
+         '<p>' + "Id = " + feature.get('bw_id') +  ' (' + (feature.get('KTR') ? feature.get('KTR') : 'k.A.') + ')' +  '</p>' +
+         '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
+         '<p>' + "Bauj. = " + (feature.get('baujahr') ? feature.get('baujahr') : 'k.A.') + '</p>' +
+         `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
+         `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
+         '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
+          '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('beschreib') + '</p>' +
+          '<p>' + beschreibLangHtml + '</p>' +
+         '</div>';
       } else {
         popup.setPosition(undefined);
       }
@@ -1171,7 +1179,6 @@ map.on('click', function (evt) {
       '<p><a href="' + feature.get('U_Steckbrief') + '" onclick="window.open(\'' + feature.get('U_Steckbrief') + '\', \'_blank\'); return false;">NLWKN-SB</a> '+
       '<p>' + urlWKDBHtml +
       //'<a href="' + feature.get('URL_WKDB') + '" onclick="window.open(\'' + feature.get('URL_WKDB') + '\', \'_blank\'); return false;">WK_DB</a> '+
-
       //'<a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Karte</a> ' +
       //'<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto</a><br>' +
       '<p><a href="' + feature.get('BSB') + '" onclick="window.open(\'' + feature.get('BSB') + '\', \'_blank\'); return false;">BSB  </a>' +
@@ -1316,11 +1323,16 @@ map.on('click', function (evt) {
         } else {
           foto4Html = " Foto 4 ";
         }
+        var rwert = feature.get('rwert');
+        var hwert = feature.get('hwert');
+        let result = UTMToLatLon_Fix(rwert, hwert, 32, true);
         content.innerHTML =
           '<div style="max-height: 200px; overflow-y: auto;">' +
           '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
           '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
           '<p>' + "WSP (OW) = " + feature.get('WSP_OW') + " m" +  "  WSP (UW) = " + feature.get('WSP_UW') + " m" + '</p>' +
+          `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
+          `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
           '<p>' + "Bauj. = " + feature.get('baujahr') + '</p>' +
           '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
            '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('beschreib') + '</p>' +
@@ -1362,11 +1374,16 @@ map.on('click', function (evt) {
             } else {
               foto4Html = " Foto 4 ";
             }
+            var rwert = feature.get('rwert');
+            var hwert = feature.get('hwert');
+            let result = UTMToLatLon_Fix(rwert, hwert, 32, true);
             content.innerHTML =
               '<div style="max-height: 200px; overflow-y: auto;">' +
               '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
               '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
               //'<p>' + "WSP1 (OW) = " + feature.get('Ziel_OW1').toFixed(2) + " m" +  "  WSP2 (OW) = " + feature.get('Ziel_OW2').toFixed(2) + " m" + '</p>' +
+              `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
+              `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
               '<p>' + "WSP1 (OW) = " + feature.get('Ziel_OW1') + " m" +  "  WSP2 (OW) = " + feature.get('Ziel_OW2') + " m" + '</p>' +
               '<p>' + "Bauj. = " + feature.get('baujahr') + '</p>' +
               '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
@@ -1741,14 +1758,20 @@ var sub2 = new Bar({
  }),
  new TextButton({
   html: "2.2",
-  title: "noch nicht belegt",
+  title: "Suche bw",
   handleClick: function () {
-   // Aktionen
+    let searchText = prompt("Geben Sie den Suchtext ein:");
+      
+    if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
+      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_due_layer);
+      document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
+    } else {
+      alert("Bitte geben Sie einen gültigen Suchtext ein.");
+    }
   }
  })
  ]
 });
-
 // Funktion zur Suche und Markierung im Layer "exp_allgm_fsk_layer"
 function highlightFeature(searchText) {
   const source = exp_allgm_fsk_layer.getSource();
@@ -1781,8 +1804,6 @@ function highlightFeature(searchText) {
     alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
   }
 }
-
-
 // Markierungsstil für das gefundene Feature
 const highlightStyle = new Style({
  stroke: new Stroke({
@@ -1793,6 +1814,79 @@ const highlightStyle = new Style({
  color: 'rgba(255, 0, 0, 0.3)'
  })
 });
+
+// Funktionen zur Bauwerkssuch
+function searchFeaturesByText(searchText) {
+  let layers = [exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_nlwkn_layer, exp_bw_due_layer]; 
+  let matchingFeatures = [];
+  
+  console.log('Suche gestartet');
+  
+  layers.forEach(layer => {
+      if (!layer) return;
+      
+      let source = layer.getSource();
+      if (!source) return;
+
+      let features = source.getFeatures();
+      console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
+
+      features.forEach(feature => {
+        let properties = feature.getProperties();
+        let name = properties.name ? properties.name.toLowerCase() : '';
+        let beschreib = properties.beschreib ? properties.beschreib.toLowerCase() : '';
+        let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
+    
+        if (name.includes(searchTextLower) || beschreib.includes(searchTextLower)) {
+            matchingFeatures.push({ feature, layer });
+        }
+    });
+  });
+
+  // Ergebnisse anzeigen
+  displaySearchResults(matchingFeatures);
+  document.getElementById("search-results-container").style.display = "block";
+}
+
+function displaySearchResults(results) {
+  let resultContainer = document.getElementById('search-results');
+  resultContainer.innerHTML = ''; // Alte Ergebnisse löschen
+
+  if (results.length === 0) {
+      resultContainer.innerHTML = '<li>Keine Treffer</li>';
+      return;
+  }
+
+  results.forEach((item) => {
+      let feature = item.feature;
+      let properties = feature.getProperties();
+      let id = properties.bw_id;
+      let name = properties.name || 'Unbekannt';
+
+      let listItem = document.createElement('li');
+      listItem.textContent = id +": " + name; // Nur den Namen anzeigen
+      listItem.onclick = () => zoomToFeature(feature);
+      
+      resultContainer.appendChild(listItem);
+  });
+}
+
+function zoomToFeature(feature) {
+    let geometry = feature.getGeometry();
+    let extent = geometry.getExtent();
+    map.getView().fit(extent, { 
+      duration: 1000, 
+      padding: [50, 50, 50, 50], 
+      maxZoom: 18// Verhindert zu starkes Hineinzoomen
+    });
+    
+    //map.getView().fit(extent, { zoom: 9, duration: 1000, padding: [50, 50, 50, 50] });
+}
+
+window.closeSearchResults = function () {
+  document.getElementById("search-results-container").style.display = "none";
+};
+
 
 
 
@@ -1871,8 +1965,6 @@ var sub1 = new Bar({
         //updateButtonAppearance(); // Aktualisieren Sie das Erscheinungsbild des Buttons basierend auf dem aktualisierten isActive-Status
         
       } ,
-      
-
     }),
     new Toggle({
       html:'<i class="fa fa-search"></i>', 
@@ -1895,7 +1987,6 @@ var mainBar1 = new Bar({
       // First level nested control bar
       bar: sub1,
       onToggle: function() { },
-      
     })
   ]
 });
