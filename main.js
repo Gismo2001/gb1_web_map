@@ -278,6 +278,7 @@ const exp_bw_sle_layer = new VectorLayer({
   style: sleStyle,
   visible: true,
   trash: false,
+  noOpacitySlider: true // 🔹 Verhindert die Anzeige des Transparenzreglers
 });
 
 const km10scal_layer = new VectorLayer({
@@ -636,6 +637,7 @@ const layerSwitcher = new LayerSwitcher({
   reverse: true, 
   trash: true, 
   tipLabel: 'Legende', 
+  
  });
 map.addControl(layerSwitcher);
 
@@ -833,6 +835,7 @@ const BwGroupP = new LayerGroup({
   fold: true,
   fold: 'close',
   layers: [ exp_bw_son_pun_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_due_layer, exp_bw_bru_andere_layer, exp_bw_bru_nlwkn_layer, exp_bw_weh_layer, exp_bw_sle_layer],
+  
 });
 const BwGroupL = new LayerGroup({
   title: "Bauw.(L)",
@@ -1757,13 +1760,13 @@ var sub2 = new Bar({
   }
  }),
  new TextButton({
-  html: "2.2",
+  html: '<i class="fa fa-anchor" ></i>',
   title: "Suche bw",
   handleClick: function () {
     let searchText = prompt("Geben Sie den Suchtext ein:");
       
     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_due_layer);
+      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_due_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer);
       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
     } else {
       alert("Bitte geben Sie einen gültigen Suchtext ein.");
@@ -1817,7 +1820,7 @@ const highlightStyle = new Style({
 
 // Funktionen zur Bauwerkssuch
 function searchFeaturesByText(searchText) {
-  let layers = [exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_nlwkn_layer, exp_bw_due_layer]; 
+  let layers = [exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer ]; 
   let matchingFeatures = [];
   
   console.log('Suche gestartet');
@@ -1829,7 +1832,7 @@ function searchFeaturesByText(searchText) {
       if (!source) return;
 
       let features = source.getFeatures();
-      console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
+      //console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
 
       features.forEach(feature => {
         let properties = feature.getProperties();

@@ -416,9 +416,11 @@ margin: 0px auto 0px 10px;
   padding: 1px;
   border-bottom: 1px solid #ddd;
 }
-#search-results li:hover {
-  background-color: #f0f0f0;
+#search-results {
+  list-style-position: inside; /* Punkte innerhalb des Containers */
+  padding-left: 0; /* Entfernt zusätzlichen linken Abstand */
 }
+
 
 #close-search-results {
   background: none;
