@@ -632,6 +632,22 @@ const osmTileCr = new TileLayer({
   opacity: 0.75
 });
 
+var Alkis_layer = new TileLayer({
+  title: "ALKIS",
+  opacity: 1.000000,
+  visible: false,
+  type: 'base',
+  source: new TileWMS({
+    url: "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkis_wms?",
+    attributions: '© LGLN',
+    params: {
+      "LAYERS": "ALKIS",
+      "TILED": true, // "true" sollte ohne Anführungszeichen sein
+      "VERSION": "1.3.0"
+    },
+  }),
+});
+
 const layerSwitcher = new LayerSwitcher({ 
   activationMode: 'click', 
   reverse: true, 
@@ -850,7 +866,7 @@ const wmsLayerGroup = new LayerGroup({
   fold: true,
   fold: 'close',
   visible: false,
-  layers: [ wmsLsgLayer, wmsNsgLayer, wmsUesgLayer, wmsWrrlFgLayer, wmsGewWmsFgLayer ]
+  layers: [ Alkis_layer, wmsLsgLayer, wmsNsgLayer, wmsUesgLayer, wmsWrrlFgLayer, wmsGewWmsFgLayer ]
 });
 const GNAtlasGroup = new LayerGroup({
   title: "Luftbilder",
@@ -1764,9 +1780,10 @@ var sub2 = new Bar({
   title: "Suche bw",
   handleClick: function () {
     let searchText = prompt("Geben Sie den Suchtext ein:");
+
       
     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_due_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer);
+      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer);
       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
     } else {
       alert("Bitte geben Sie einen gültigen Suchtext ein.");
@@ -1818,9 +1835,9 @@ const highlightStyle = new Style({
  })
 });
 
-// Funktionen zur Bauwerkssuch
+// Funktionen zur Bauwerkssuche
 function searchFeaturesByText(searchText) {
-  let layers = [exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer ]; 
+  let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer ]; 
   let matchingFeatures = [];
   
   console.log('Suche gestartet');
@@ -1848,7 +1865,9 @@ function searchFeaturesByText(searchText) {
 
   // Ergebnisse anzeigen
   displaySearchResults(matchingFeatures);
-  document.getElementById("search-results-container").style.display = "block";
+  document.getElementById("close-search-results").addEventListener("click", function() {
+    document.getElementById("search-results-container").style.display = "none";
+  });
 }
 
 function displaySearchResults(results) {
