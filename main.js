@@ -196,8 +196,11 @@ const gew_layer_layer = new VectorLayer({
 
 const exp_bw_son_pun_layer = new VectorLayer({
   source: new VectorSource({
-  format: new GeoJSON(),
-  url: function (extent) {return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
+    format: new GeoJSON(),
+    url: function (extent) {
+      return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); }, 
+    strategy: LoadingStrategy.bbox 
+  }),
   title: 'Sonstige, Punkte', 
   name: 'son_pun', 
   style: getStyleForArtSonPun,
@@ -900,7 +903,7 @@ map.addLayer(BwGroupP);
 map.addLayer(vector); 
 //Ende Layer hinzufügen---------------------------------------
 
-//--------------------------------------------------Info für WMS-Layer
+//-------------------------------------------------------------------------------Info für WMS-Layer
 var toggleButtonU = new Toggle({
   html: '<i class="icon fa-fw fa fa-arrow-circle-down" aria-hidden="true"></i>',
   className: "select",
@@ -1783,7 +1786,7 @@ var sub2 = new Bar({
 
       
     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer);
+      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer );
       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
     } else {
       alert("Bitte geben Sie einen gültigen Suchtext ein.");
@@ -1837,7 +1840,7 @@ const highlightStyle = new Style({
 
 // Funktionen zur Bauwerkssuche
 function searchFeaturesByText(searchText) {
-  let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer ]; 
+  let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
   let matchingFeatures = [];
   
   console.log('Suche gestartet');
@@ -1849,7 +1852,7 @@ function searchFeaturesByText(searchText) {
       if (!source) return;
 
       let features = source.getFeatures();
-      //console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
+      console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
 
       features.forEach(feature => {
         let properties = feature.getProperties();
@@ -1869,7 +1872,6 @@ function searchFeaturesByText(searchText) {
     document.getElementById("search-results-container").style.display = "none";
   });
 }
-
 function displaySearchResults(results) {
   let resultContainer = document.getElementById('search-results');
   resultContainer.innerHTML = ''; // Alte Ergebnisse löschen
@@ -1879,6 +1881,13 @@ function displaySearchResults(results) {
       return;
   }
 
+  // 🔹 Alphanumerische Sortierung nach bw_id
+  results.sort((a, b) => {
+      let idA = a.feature.getProperties().bw_id || '';
+      let idB = b.feature.getProperties().bw_id || '';
+      return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+  });
+
   results.forEach((item) => {
       let feature = item.feature;
       let properties = feature.getProperties();
@@ -1886,7 +1895,7 @@ function displaySearchResults(results) {
       let name = properties.name || 'Unbekannt';
 
       let listItem = document.createElement('li');
-      listItem.textContent = id +": " + name; // Nur den Namen anzeigen
+      listItem.textContent = id + ": " + name; // Nur den Namen anzeigen
       listItem.onclick = () => zoomToFeature(feature);
       
       resultContainer.appendChild(listItem);

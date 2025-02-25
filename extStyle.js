@@ -297,6 +297,9 @@ function getStyleForArtSonPun(feature) {
     }else if (/betriebs/i.test(artValue)) {
         iconSrc = './data/sonPunBetrieb.svg';
     
+    }else if (/steg/i.test(artValue)) {
+        iconSrc = './data/bwSonPun_Anleger.svg';   
+        
     } else if (artValue === 'Infotafel') {
         iconSrc = './data/sonPunInfo.svg';
     } else if (artValue === 'Auskolkung') {
