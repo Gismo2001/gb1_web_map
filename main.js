@@ -1761,6 +1761,7 @@ var currentlyHighlightedFeature = null; // Variable zur Verfolgung des aktuell m
 var sub2 = new Bar({
  toggleOne: true,
  controls: [
+  // Suche nach Flurstück
  new TextButton({
   html: '<i class="fa fa-map" ></i>',
   title: "Flurstückssuche",
@@ -1773,60 +1774,87 @@ var sub2 = new Bar({
       // Fordere den Nutzer zur Eingabe auf
       userInput = prompt("gem flur zähler/nenner oder fsk-id:", "");
       if (userInput) {
-        highlightFeature(userInput);
+        highlightFeatureFSK(userInput);
       }
     }
   }
  }),
+ // Suche nach Bauwerk
  new TextButton({
   html: '<i class="fa fa-anchor" ></i>',
   title: "Suche bw",
   handleClick: function () {
     let searchText = prompt("Geben Sie den Suchtext ein:");
-
-      
     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByText(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer );
+      let results = searchFeaturesByTextBw(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer );
       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
     } else {
       alert("Bitte geben Sie einen gültigen Suchtext ein.");
     }
   }
+ }),
+ // Suche nach Eigentümer
+ new TextButton({
+  html: '<i class="fa fa-anchor" ></i>',
+  title: "Suche Eigentümer",
+  handleClick: function () {
+    let searchText = prompt("Geben Sie einen Nachnamen ein:");
+    highlightFeatureEig(searchText);
+  }
  })
  ]
 });
-// Funktion zur Suche und Markierung im Layer "exp_allgm_fsk_layer"
-function highlightFeature(searchText) {
+// Funktion zur Suche und Markierung FSK "
+function highlightFeatureFSK(searchText) {
   const source = exp_allgm_fsk_layer.getSource();
   const features = source.getFeatures();
   let found = false;
-
   // Prüfen, ob die erste Stelle eine Zahl oder ein Buchstabe ist
   const firstChar = searchText.charAt(0);
   const isNumber = !isNaN(firstChar) && firstChar.trim() !== "";
-
   // Wähle das zu durchsuchende Attribut
   const searchAttribute = isNumber ? "fsk" : "Suche";
-
   features.some(feature => {
     let searchValue = feature.get(searchAttribute);
     if (searchValue === searchText) {
-      
       feature.setStyle(highlightStyle);
       map.getView().fit(feature.getGeometry().getExtent(), { duration: 1000 });
-
       currentlyHighlightedFeature = feature; // Speichere das aktuell angeklickte Feature
-
       found = true;
       return true;
     }
     return false;
   });
-
   if (!found) {
     alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
   }
 }
+// Funktion zur Suche und Markierung Eigentümer"
+function highlightFeatureEig(searchText) {
+  const source = exp_allgm_fsk_layer.getSource();
+  const features = source.getFeatures();
+  let found = false;
+  // Wähle das zu durchsuchende Attribut
+  const searchAttribute = "Eig1";
+  alert("Fiunktion aufgerufen");
+  features.some(feature => {
+    let searchValue = feature.get(searchAttribute);
+    if ((searchValue || "").toLowerCase().includes((searchText || "").toLowerCase())) {
+      console.log(feature);
+      feature.setStyle(highlightStyle);
+      map.getView().fit(feature.getGeometry().getExtent(), { duration: 1000 });
+      currentlyHighlightedFeature = feature; // Speichere das aktuell angeklickte Feature
+      found = true;
+      return true;
+    }
+    return false;
+  });    
+  if (!found) {
+    alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
+  }
+}
+
+
 // Markierungsstil für das gefundene Feature
 const highlightStyle = new Style({
  stroke: new Stroke({
@@ -1838,11 +1866,44 @@ const highlightStyle = new Style({
  })
 });
 
+
+
+// Funktionen zur Eigentümersuche
+function searchFeaturesByTextEig(searchText) {
+
+  let matchingFeatures = [];
+  console.log('Suche gestartet');
+  
+  layers.forEach(layer => {
+     
+      let features = source.getFeatures();
+      console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
+
+      features.forEach(feature => {
+        let properties = feature.getProperties();
+        let name = properties.Eig1 ? properties.Eig1.toLowerCase() : '';
+        let beschreib = "";
+        let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
+        if (name.includes(searchTextLower) ) {
+            matchingFeatures.push({ feature, layer });
+        }
+    });
+  });
+
+  // Ergebnisse anzeigen
+  displaySearchResults(matchingFeatures);
+  document.getElementById("close-search-results").addEventListener("click", function() {
+    document.getElementById("search-results-container").style.display = "none";
+  });
+}
+
+
+
+
 // Funktionen zur Bauwerkssuche
-function searchFeaturesByText(searchText) {
+function searchFeaturesByTextbw(searchText) {
   let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
   let matchingFeatures = [];
-  
   console.log('Suche gestartet');
   
   layers.forEach(layer => {
@@ -1921,15 +1982,18 @@ window.closeSearchResults = function () {
 
 
 
-//GPS-Postionn durch "P"
+//Das Untermenü mit zwei buttons
 var sub1 = new Bar({
   toggleOne: true,
+  //Die Untermenüs
   controls:[
+    // Das Untermenü GPS-Position
     new Toggle({
       html: '<i class="fa fa-map-marker" ></i>',
-      title: "GPS-Position",
+      title: "GPSPosition",
       //autoActivate: true,
       onToggle: 
+      // Funktion zur Anzeige der GPS-Position
       function () {
         if (!watchId) {
           // Starte die Geolokalisierung, wenn sie nicht aktiv ist
@@ -1997,6 +2061,7 @@ var sub1 = new Bar({
         
       } ,
     }),
+    // Das Untermenü Suche (ohne eigene Funktion) aber mit einem Untermenü
     new Toggle({
       html:'<i class="fa fa-search"></i>', 
       title: "Suche",
@@ -2009,13 +2074,13 @@ var sub1 = new Bar({
   ]
 });
 
-//Mainbar1
+//Mainbar Button "i"
 var mainBar1 = new Bar({
   controls: [
     new Toggle({
       html: '<i class="fa fa-info"></i>',
       title: "Weitere Funktionen",
-      // First level nested control bar
+      // Untermenü mit zwei Buttons
       bar: sub1,
       onToggle: function() { },
     })
