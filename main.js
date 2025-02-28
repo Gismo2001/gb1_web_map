@@ -1786,7 +1786,8 @@ var sub2 = new Bar({
   handleClick: function () {
     let searchText = prompt("Geben Sie den Suchtext ein:");
     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByTextBw(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer );
+      let results = searchFeaturesByTextbw(searchText);
+      //let results = searchFeaturesByTextBw(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer );
       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
     } else {
       alert("Bitte geben Sie einen gültigen Suchtext ein.");
@@ -1804,7 +1805,7 @@ var sub2 = new Bar({
  })
  ]
 });
-// Funktion zur Suche und Markierung FSK "
+// ------------------------------------------------Funktion zur Suche und Markierung FSK "
 function highlightFeatureFSK(searchText) {
   const source = exp_allgm_fsk_layer.getSource();
   const features = source.getFeatures();
@@ -1829,7 +1830,7 @@ function highlightFeatureFSK(searchText) {
     alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
   }
 }
-// Funktion zur Suche und Markierung Eigentümer"
+//---------------------------------------------- Funktion zur Suche und Markierung Eigentümer"
 function highlightFeatureEig(searchText) {
   const source = exp_allgm_fsk_layer.getSource();
   const features = source.getFeatures();
@@ -1867,8 +1868,7 @@ const highlightStyle = new Style({
 });
 
 
-
-// Funktionen zur Eigentümersuche
+//----------------------------------------------------- Funktionen zur Eigentümersuche
 function searchFeaturesByTextEig(searchText) {
 
   let matchingFeatures = [];
@@ -1901,7 +1901,8 @@ function searchFeaturesByTextEig(searchText) {
 
 
 // Funktionen zur Bauwerkssuche
-function searchFeaturesByTextbw(searchText) {
+
+function searchFeaturesByTextbw(searchText) {  
   let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
   let matchingFeatures = [];
   console.log('Suche gestartet');
