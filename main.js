@@ -673,11 +673,9 @@ const vector = new VectorLayer({
     'circle-fill-color': '#ffcc33',
   }, 
 });
-
 let sketch;
 let measureTooltipElement;
 let measureTooltip;
-
 //-------------------------------------------Funktionen für Messung----------------- //
 const pointerMoveHandler = function (evt) {
   
@@ -693,6 +691,7 @@ const pointerMoveHandler = function (evt) {
 };
 map.on('pointermove', pointerMoveHandler);
 let draw;
+
 const formatLength = function (line) {
   const length = getLength(line);
   let output;
@@ -903,7 +902,7 @@ map.addLayer(BwGroupP);
 map.addLayer(vector); 
 //Ende Layer hinzufügen---------------------------------------
 
-//-------------------------------------------------------------------------------Info für WMS-Layer
+//-----------------------------------------------------------------Info für WMS-Layer
 var toggleButtonU = new Toggle({
   html: '<i class="icon fa-fw fa fa-arrow-circle-down" aria-hidden="true"></i>',
   className: "select",
@@ -952,7 +951,7 @@ let layer_selected = null; // Setze layer_selected auf null, um sicherzustellen,
 selectFeat.on('select', function (e) {
   e.selected.forEach(function (featureSelected) {
       const layerName = selectFeat.getLayer(featureSelected).get('name');
-      //console.log('SelcetFeat='+ layerName);
+      
 
       if (layerName !== 'gew') {
           // Setze layer_selected nur, wenn das layerName nicht 'gew' ist
@@ -974,10 +973,10 @@ function getLayersInGroup(layerGroup) {
       if (layer instanceof LayerGroup) {
           // Wenn der Layer ein LayerGroup ist, rufe die Funktion rekursiv auf
           layers.push(...getLayersInGroup(layer));
-          //console.log('layers in group: '+ layers);
+          
       } else {
           // Füge den Layer zur Liste hinzu, wenn e ein TileLayer ist
-          //console.log('layers nicht in group: '+ layer);
+          
           layers.push(layer);
       }
   });
@@ -1060,7 +1059,7 @@ function removeExistingInfoDiv() {
   if (existingInfoDiv) { existingInfoDiv.remove(); }
 }
 
-//---------------------------------------------------Funktionen für Popup
+//--------------------------------------------------------------Funktionen für Popup
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
 var closer = document.getElementById('popup-closer');
@@ -1082,7 +1081,7 @@ closer.onclick = function()
 };
 var closer = document.getElementById('popup-closer');
 
-//--------------------------------------------------Funktionen für Text im Popup
+//-------------------------------------------------------Funktionen für Text im Popup
 map.on('click', function (evt) {
   if (globalCoordAnOderAus===false ){
     var coordinates = evt.coordinate;
@@ -1515,7 +1514,7 @@ function placeMarkerAndShowCoordinates(event) {
       const swappedCoordinate = [transformedCoordinate[1], transformedCoordinate[0]]; // Swap x and y
       mousePositionElement.innerHTML = `Coordinates: ${format(swappedCoordinate)}`;
       // const googleMapsLink = `https://maps.app.goo.gl/?q=${swappedCoordinate[0]},${swappedCoordinate[1]}`;
-      // console.log(googleMapsLink);
+      
     }
     
   }
@@ -1603,7 +1602,7 @@ document.getElementById('popup-closer').onclick = function () {
 
 
 
-//----------------------------------------------Print
+//---------------------------------------------------------------------------Print
 const dims = {
   a0: [1189, 841],
   a1: [841, 594],
@@ -1692,7 +1691,7 @@ var sLayer = new VectorLayer({
 });
 map.addLayer(sLayer);
 
-//----------------------------------------------------------- Set the search control 
+//-------------------------------------------------------------- Set the search control 
 var search = new SearchPhoton({
   //target: $(".options").get(0),
   lang:"de",		// Force preferred language
@@ -1711,7 +1710,7 @@ search.on('select', function(e){
     
     var format = new GeoJSON();
     var f = format.readFeature(e.search.geojson, { dataProjection: "EPSG:4326", featureProjection: map.getView().getProjection() });
-    //console.log(f)
+   
     sLayer.getSource().addFeature(f);
     var view = map.getView();
     var resolution = view.getResolutionForExtent(f.getGeometry().getExtent(), map.getSize());
@@ -1751,7 +1750,8 @@ function addMarker(coordinates) {
   sLayer.getSource().clear(); // Löscht vorherige Marker
   sLayer.getSource().addFeature(marker);
 };
-//-----------------------------------------Menü mit Submenü
+
+//----------------------------------------------------------------Menü mit Submenü
 
 //-----------------------------------------Menü mit Submenü
 var userInput = ""; // Globale Variable zur Speicherung der Nutzereingabe
@@ -1786,8 +1786,7 @@ var sub2 = new Bar({
   handleClick: function () {
     let searchText = prompt("Geben Sie den Suchtext ein:");
     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByTextbw(searchText);
-      //let results = searchFeaturesByTextBw(searchText, exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer );
+      let results = searchFeaturesByTextBw(searchText);
       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
     } else {
       alert("Bitte geben Sie einen gültigen Suchtext ein.");
@@ -1796,15 +1795,21 @@ var sub2 = new Bar({
  }),
  // Suche nach Eigentümer
  new TextButton({
-  html: '<i class="fa fa-anchor" ></i>',
+  html: '<i class="fa fa-anchor"></i>',
   title: "Suche Eigentümer",
   handleClick: function () {
-    let searchText = prompt("Geben Sie einen Nachnamen ein:");
-    highlightFeatureEig(searchText);
+    let searchText = prompt("Geben Sie den Suchtext ein:");
+    if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
+      let results = searchFeaturesByTextEig(searchText);
+      document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
+    } else {
+      alert("Bitte geben Sie einen gültigen Suchtext ein.");
+    }
   }
  })
  ]
 });
+
 // ------------------------------------------------Funktion zur Suche und Markierung FSK "
 function highlightFeatureFSK(searchText) {
   const source = exp_allgm_fsk_layer.getSource();
@@ -1831,138 +1836,157 @@ function highlightFeatureFSK(searchText) {
   }
 }
 //---------------------------------------------- Funktion zur Suche und Markierung Eigentümer"
-function highlightFeatureEig(searchText) {
-  const source = exp_allgm_fsk_layer.getSource();
-  const features = source.getFeatures();
-  let found = false;
-  // Wähle das zu durchsuchende Attribut
-  const searchAttribute = "Eig1";
-  alert("Fiunktion aufgerufen");
-  features.some(feature => {
-    let searchValue = feature.get(searchAttribute);
-    if ((searchValue || "").toLowerCase().includes((searchText || "").toLowerCase())) {
-      console.log(feature);
-      feature.setStyle(highlightStyle);
-      map.getView().fit(feature.getGeometry().getExtent(), { duration: 1000 });
-      currentlyHighlightedFeature = feature; // Speichere das aktuell angeklickte Feature
-      found = true;
-      return true;
-    }
-    return false;
-  });    
-  if (!found) {
-    alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
+function highlightFeatureEig1(feature) {
+  // Falls ein anderes Feature hervorgehoben ist, Stil zurücksetzen
+  if (currentlyHighlightedFeature) {
+    currentlyHighlightedFeature.setStyle(null); // Standard-Stil wiederherstellen
   }
+  feature.setStyle(highlightStyle);
+  currentlyHighlightedFeature = feature; // Speichert das hervorgehobene Feature
+  // Karte auf das Feature zoomen
+  let geometry = feature.getGeometry();
+  let extent = geometry.getExtent();
+  map.getView().fit(extent, { 
+    duration: 1000, 
+    padding: [50, 50, 50, 50], 
+    maxZoom: 18 
+  });
 }
-
 
 // Markierungsstil für das gefundene Feature
 const highlightStyle = new Style({
  stroke: new Stroke({
  color: 'red',
- width: 3
+ width: 12 
  }),
  fill: new Fill({
- color: 'rgba(255, 0, 0, 0.3)'
+ color: 'rgb(234, 255, 0)'
  })
 });
 
-
 //----------------------------------------------------- Funktionen zur Eigentümersuche
 function searchFeaturesByTextEig(searchText) {
-
   let matchingFeatures = [];
-  console.log('Suche gestartet');
+  console.log('Suche gestartet Eigentümer');
+
+  const source = exp_allgm_fsk_layer.getSource();
+  if (!source) {
+    console.error("Fehler: Die Layer-Quelle ist nicht verfügbar.");
+    return;
+  }
+
+  let features = source.getFeatures();
   
-  layers.forEach(layer => {
-     
-      let features = source.getFeatures();
-      console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
-
-      features.forEach(feature => {
-        let properties = feature.getProperties();
-        let name = properties.Eig1 ? properties.Eig1.toLowerCase() : '';
-        let beschreib = "";
-        let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
-        if (name.includes(searchTextLower) ) {
-            matchingFeatures.push({ feature, layer });
-        }
-    });
+  features.forEach(feature => {
+    let properties = feature.getProperties();
+    let name = properties.Eig1 ? properties.Eig1.toLowerCase() : '';
+    
+    let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
+    
+    if (name.includes(searchTextLower)) {
+      matchingFeatures.push({ feature }); // Layer explizit hinzugefügt
+    }
   });
-
+  
   // Ergebnisse anzeigen
-  displaySearchResults(matchingFeatures);
+  displaySearchResultsEig(matchingFeatures);
+
   document.getElementById("close-search-results").addEventListener("click", function() {
     document.getElementById("search-results-container").style.display = "none";
+    
+    // Hervorhebung zurücksetzen
+    if (currentlyHighlightedFeature) {
+      currentlyHighlightedFeature.setStyle(null);
+      currentlyHighlightedFeature = null;
+    }
   });
+  
 }
-
-
-
 
 // Funktionen zur Bauwerkssuche
 
-function searchFeaturesByTextbw(searchText) {  
+function searchFeaturesByTextBw(searchText) {  
   let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
   let matchingFeatures = [];
-  console.log('Suche gestartet');
-  
   layers.forEach(layer => {
       if (!layer) return;
-      
       let source = layer.getSource();
       if (!source) return;
-
       let features = source.getFeatures();
-      console.log(`Layer: ${layer.get('title')}, Anzahl Features: ${features.length}`);
-
       features.forEach(feature => {
         let properties = feature.getProperties();
         let name = properties.name ? properties.name.toLowerCase() : '';
         let beschreib = properties.beschreib ? properties.beschreib.toLowerCase() : '';
         let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
-    
         if (name.includes(searchTextLower) || beschreib.includes(searchTextLower)) {
             matchingFeatures.push({ feature, layer });
         }
     });
   });
-
   // Ergebnisse anzeigen
-  displaySearchResults(matchingFeatures);
+  displaySearchResultsBw(matchingFeatures);
   document.getElementById("close-search-results").addEventListener("click", function() {
     document.getElementById("search-results-container").style.display = "none";
   });
 }
-function displaySearchResults(results) {
+
+function displaySearchResultsBw(results) {
   let resultContainer = document.getElementById('search-results');
   resultContainer.innerHTML = ''; // Alte Ergebnisse löschen
-
   if (results.length === 0) {
       resultContainer.innerHTML = '<li>Keine Treffer</li>';
       return;
   }
-
   // 🔹 Alphanumerische Sortierung nach bw_id
   results.sort((a, b) => {
       let idA = a.feature.getProperties().bw_id || '';
       let idB = b.feature.getProperties().bw_id || '';
       return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
   });
-
   results.forEach((item) => {
       let feature = item.feature;
       let properties = feature.getProperties();
       let id = properties.bw_id;
       let name = properties.name || 'Unbekannt';
-
       let listItem = document.createElement('li');
       listItem.textContent = id + ": " + name; // Nur den Namen anzeigen
       listItem.onclick = () => zoomToFeature(feature);
-      
       resultContainer.appendChild(listItem);
   });
 }
+
+//let currentlyHighlightedFeature = null; // Speichert das aktuell hervorgehobene Feature
+
+function displaySearchResultsEig(results) {
+  let resultContainer = document.getElementById('search-results');
+  resultContainer.innerHTML = ''; // Alte Ergebnisse löschen
+
+  if (results.length === 0) {
+    resultContainer.innerHTML = '<li>Keine Treffer</li>';
+    return;
+  }
+
+  results.sort((a, b) => {
+    let idA = a.feature.getProperties().Eig1 || '';
+    let idB = b.feature.getProperties().Eig1 || '';
+    return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+  });
+  
+
+  results.forEach((item) => {
+    let feature = item.feature;
+    let properties = feature.getProperties();
+    let name = properties.Eig1 || 'Unbekannt';
+    let suche = properties.Suche || 'Unbekannt';
+
+    let listItem = document.createElement('li');
+    listItem.textContent = name + "/ FSK: " + suche; // Nur den Namen anzeigen
+    listItem.onclick = () => highlightFeatureEig1(feature); // Beim Klicken hervorheben
+
+    resultContainer.appendChild(listItem);
+  });
+}
+
 
 function zoomToFeature(feature) {
     let geometry = feature.getGeometry();
