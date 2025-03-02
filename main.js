@@ -88,10 +88,18 @@ const attribution = new Attribution({
   html: '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
 });
 
+// Function to remove all overlays
+function removeAllOverlays() {
+  map.getOverlays().clear();
+}
+
+
 const mapView = new View({
   center: proj.fromLonLat([7.35, 52.7]),
   zoom: 9
 });
+
+
 
 const map = new Map({
   target: "map",
@@ -794,11 +802,10 @@ map.getViewport().addEventListener('contextmenu', function(evt) {
     draw.finishDrawing(); // Beendet die laufende Messung
     map.removeInteraction(draw); // Entfernt die Zeicheninteraktion
     map.un('pointermove', pointerMoveHandler); // Entfernt den Event-Listener für 'pointermove'
+    map.getOverlays().clear();//helpTooltip = null;
     measureTooltip = null;
+    helpTooltipElement = null;
     measureTooltipElement = null;
-    map.removeOverlay(measureTooltip);
-    
-    //map.removeOverlay(measureTooltip);
     
     return; // Beende die Funktion, um weitere Interaktionen zu verhindern
   }
@@ -1083,6 +1090,7 @@ var closer = document.getElementById('popup-closer');
 
 //-------------------------------------------------------Funktionen für Text im Popup
 map.on('click', function (evt) {
+  console.log(globalCoordAnOderAus);
   if (globalCoordAnOderAus===false ){
     var coordinates = evt.coordinate;
     var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) 
@@ -1994,18 +2002,15 @@ function zoomToFeature(feature) {
     map.getView().fit(extent, { 
       duration: 1000, 
       padding: [50, 50, 50, 50], 
-      maxZoom: 18// Verhindert zu starkes Hineinzoomen
+      maxZoom: 20// Verhindert zu starkes Hineinzoomen
     });
     
-    //map.getView().fit(extent, { zoom: 9, duration: 1000, padding: [50, 50, 50, 50] });
+    
 }
 
 window.closeSearchResults = function () {
   document.getElementById("search-results-container").style.display = "none";
 };
-
-
-
 
 //Das Untermenü mit zwei buttons
 var sub1 = new Bar({
