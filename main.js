@@ -794,6 +794,7 @@ function createMeasureTooltip() {
   });
   map.addOverlay(measureTooltip);
 }
+
 //Mit Kontextmenü werden die Overlays fü Messungen wieder gelöscht
 map.getViewport().addEventListener('contextmenu', function(evt) {
   evt.preventDefault(); // Verhindert das Standardkontextmenü
@@ -993,8 +994,8 @@ function getLayersInGroup(layerGroup) {
 function singleClickHandler(evt) {
   const visibleLayers = [];
   map.getLayers().forEach(layer => {
-      const layerName = layer.get('name');
       
+      console.log(layerName);  
       if (layer.getVisible()) {
         if (layer instanceof LayerGroup) {
           if (layerName !== 'GN-DOPs' && layerName !== 'Base' && layerName !== 'Station' && layerName !== 'BauwP' && layerName !== 'BauwL' && layerName !== undefined){
@@ -1974,12 +1975,12 @@ function displaySearchResultsEig(results) {
     return;
   }
 
-  results.sort((a, b) => {
-    let idA = a.feature.getProperties().Eig1 || '';
-    let idB = b.feature.getProperties().Eig1 || '';
-    return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
-  });
   
+  results.sort((a, b) => {
+    let idA = a.feature?.getProperties()?.Eig1?.trim() || '';
+    let idB = b.feature?.getProperties()?.Eig1?.trim() || '';
+    return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' }); 
+  });
 
   results.forEach((item) => {
     let feature = item.feature;
