@@ -22,6 +22,7 @@ import {getArea, getLength} from 'ol/sphere.js';
 import {unByKey} from 'ol/Observable.js';
 import { FullScreen, Attribution, defaults as defaultControls, ZoomToExtent, Control } from 'ol/control.js';
 import { DragRotateAndZoom } from 'ol/interaction.js';
+import { DragAndDrop } from 'ol/interaction.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { singleClick } from 'ol/events/condition';
 
@@ -681,6 +682,9 @@ const vector = new VectorLayer({
     'circle-fill-color': '#ffcc33',
   }, 
 });
+
+
+
 let sketch;
 let measureTooltipElement;
 let measureTooltip;
@@ -995,7 +999,7 @@ function singleClickHandler(evt) {
   const visibleLayers = [];
   map.getLayers().forEach(layer => {
       
-      console.log(layerName);  
+      const layerName = layer.get('name');
       if (layer.getVisible()) {
         if (layer instanceof LayerGroup) {
           if (layerName !== 'GN-DOPs' && layerName !== 'Base' && layerName !== 'Station' && layerName !== 'BauwP' && layerName !== 'BauwL' && layerName !== undefined){
@@ -1019,7 +1023,9 @@ function singleClickHandler(evt) {
           fetch(url)
                 
           .then((response) => response.text())
+          
           .then((html) => {
+            console.log(html)
             if (html.trim() !== '') {
              //removeExistingInfoDiv();
               var bodyIsEmpty = /<body[^>]*>\s*<\/body>/i.test(html);
@@ -2013,7 +2019,7 @@ window.closeSearchResults = function () {
   document.getElementById("search-results-container").style.display = "none";
 };
 
-//Das Untermenü mit zwei buttons
+//Das Untermenü mit drei buttons
 var sub1 = new Bar({
   toggleOne: true,
   //Die Untermenüs
@@ -2101,9 +2107,51 @@ var sub1 = new Bar({
        },
       // Second level nested control bar
       bar: sub2
-    })
+    }),
+    // Das Untermenü GeoJson
+    new Toggle({
+      html: '<i class="fa fa-file"></i>',
+      title: "GeoJson drag and drop",
+      //autoActivate: true,
+      onToggle: 
+      // Funktion zum laden von geojson
+      function () {
+        setInteraction();
+      } ,
+    }),
   ]
 });
+
+
+//const extractStyles = document.getElementById('extractstyles');
+let dragAndDropInteraction;
+
+function setInteraction() {
+  if (dragAndDropInteraction) {
+    map.removeInteraction(dragAndDropInteraction);
+  } else {
+  dragAndDropInteraction = new DragAndDrop({
+    formatConstructors: [
+      //GPX,
+      GeoJSON,
+      //IGC,
+      // use constructed format to set options
+      //new KML({extractStyles: extractStyles.checked}),
+      //TopoJSON,
+    ],
+  });
+  dragAndDropInteraction.on('addfeatures', function (event) {
+    const vectorSource = new VectorSource({features: event.features, });
+    map.addLayer(new VectorLayer({source: vectorSource, }),);
+    map.getView().fit(vectorSource.getExtent());
+    }
+  );
+  map.addInteraction(dragAndDropInteraction);
+  }
+}
+
+
+
 
 //Mainbar Button "i"
 var mainBar1 = new Bar({
