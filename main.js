@@ -2112,12 +2112,15 @@ var sub1 = new Bar({
     new Toggle({
       html: '<i class="fa fa-file"></i>',
       title: "GeoJson drag and drop",
-      //autoActivate: true,
-      onToggle: 
-      // Funktion zum laden von geojson
-      function () {
-        setInteraction();
-      } ,
+      onToggle: function () {
+      if (this.getActive()) {
+      console.log("Button ist aktiviert");
+      setInteraction(); // Funktion nur ausführen, wenn der Button aktiv ist
+      } else {
+      console.log("Button ist deaktiviert");
+      // Falls du beim Deaktivieren etwas tun möchtest, kannst du es hier hinzufügen
+      }
+  },
     }),
   ]
 });
@@ -2129,6 +2132,8 @@ let dragAndDropInteraction;
 function setInteraction() {
   if (dragAndDropInteraction) {
     map.removeInteraction(dragAndDropInteraction);
+    isActive = false;
+    console.log('dragAndDropInteraction deaktiviert');
   } else {
   dragAndDropInteraction = new DragAndDrop({
     formatConstructors: [
@@ -2149,8 +2154,6 @@ function setInteraction() {
   map.addInteraction(dragAndDropInteraction);
   }
 }
-
-
 
 
 //Mainbar Button "i"
