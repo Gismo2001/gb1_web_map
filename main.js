@@ -2018,7 +2018,7 @@ function zoomToFeature(feature) {
 window.closeSearchResults = function () {
   document.getElementById("search-results-container").style.display = "none";
 };
-
+let jsonButtonState = false; // Initialer Zustand
 //Das Untermenü mit drei buttons
 var sub1 = new Bar({
   toggleOne: true,
@@ -2113,14 +2113,15 @@ var sub1 = new Bar({
       html: '<i class="fa fa-file"></i>',
       title: "GeoJson drag and drop",
       onToggle: function () {
-      if (this.getActive()) {
-      console.log("Button ist aktiviert");
-      setInteraction(); // Funktion nur ausführen, wenn der Button aktiv ist
-      } else {
-      console.log("Button ist deaktiviert");
-      // Falls du beim Deaktivieren etwas tun möchtest, kannst du es hier hinzufügen
-      }
-  },
+      jsonButtonState = !jsonButtonState; // Zustand umschalten
+      if (jsonButtonState === true) {
+        setInteraction(); // Deine Funktion aufrufen, wenn der Zustand true ist
+        } else {
+        map.removeInteraction(dragAndDropInteraction);
+        isActive = false;
+        console.log('dragAndDropInteraction deaktiviert');  
+        }
+      },
     }),
   ]
 });
@@ -2130,12 +2131,7 @@ var sub1 = new Bar({
 let dragAndDropInteraction;
 
 function setInteraction() {
-  if (dragAndDropInteraction) {
-    map.removeInteraction(dragAndDropInteraction);
-    isActive = false;
-    console.log('dragAndDropInteraction deaktiviert');
-  } else {
-  dragAndDropInteraction = new DragAndDrop({
+   dragAndDropInteraction = new DragAndDrop({
     formatConstructors: [
       //GPX,
       GeoJSON,
@@ -2146,13 +2142,31 @@ function setInteraction() {
     ],
   });
   dragAndDropInteraction.on('addfeatures', function (event) {
-    const vectorSource = new VectorSource({features: event.features, });
-    map.addLayer(new VectorLayer({source: vectorSource, }),);
+    if (!event.file) {
+      console.warn("Kein Dateiname verfügbar.");
+      return;
+    }
+
+    let fileName = event.file.name || 'Unbenannt';
+    fileName = fileName.replace(/\.[^/.]+$/, ""); // Dateiendung entfernen
+
+    const vectorSource = new VectorSource
+    ({
+      features: event.features, 
+
+    });
+    map.addLayer
+    (new VectorLayer
+      ({
+        source: vectorSource, 
+        title: fileName, // Titel setzen
+      }),
+    );
     map.getView().fit(vectorSource.getExtent());
     }
   );
   map.addInteraction(dragAndDropInteraction);
-  }
+  
 }
 
 
