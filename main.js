@@ -650,6 +650,33 @@ var Alkis_layer = new TileLayer({
   }),
 });
 
+// Permalink-Control hinzufügen (wird nicht automatisch sichtbar)
+const ctrl = new Permalink({
+  geohash: /gh=/.test(document.location.href),
+  localStorage: true,
+  onclick: function (url) {
+    console.log("Permalink: " + url);
+    alert("Permalink kopiert: " + url);
+  }
+});
+map.addControl(ctrl);
+
+// Manuellen Button für Permalink erstellen
+const permalinkButton = document.createElement("button");
+permalinkButton.innerText = "Permalink";
+permalinkButton.style.position = "absolute";
+permalinkButton.style.top = "10px";
+permalinkButton.style.left = "100px";
+permalinkButton.style.zIndex = "1000";
+permalinkButton.onclick = function () {
+  const url = ctrl.getLink();
+  navigator.clipboard.writeText(url);
+  alert("Permalink kopiert: " + url);
+};
+
+// Button zum DOM hinzufügen
+document.body.appendChild(permalinkButton);
+
 
 const layerSwitcher = new LayerSwitcher({ 
   activationMode: 'click', 
@@ -658,6 +685,10 @@ const layerSwitcher = new LayerSwitcher({
   tipLabel: 'Legende', 
  });
 map.addControl(layerSwitcher);
+
+
+
+
     
 //------------------------------------ Layer für Messung
 const source = new VectorSource();
