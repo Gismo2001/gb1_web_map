@@ -13,11 +13,13 @@
     "babel-loader": "^9.2.1",
     "vite": "^5.1.5"
   },
+  
   "dependencies": {
     "jspdf": "^2.5.1",
     "kompas": "^0.0.2",
     "ol": "9.0.0",
     "ol-ext": "^4.0.17",
+    "permalinks": "^2.0.0",
     "proj4": "^2.11.0"
   }
 }

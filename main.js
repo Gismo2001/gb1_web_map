@@ -7,6 +7,8 @@ import Feature from 'ol/Feature';
 import Overlay from 'ol/Overlay.js';
 import Draw from 'ol/interaction/Draw.js';
 import {LineString, Polygon, Point, Circle} from 'ol/geom.js';
+import Link from 'ol/interaction/Link.js';
+
 
 import {circular} from 'ol/geom/Polygon';
 import Geolocation from 'ol/Geolocation.js';
@@ -36,6 +38,9 @@ import SearchPhoton from 'ol-ext/control/SearchPhoton';
 import SearchFeature from 'ol-ext/control/SearchFeature';
 //import SearchNominatim from 'ol-ext/control/SearchNominatim';
 import WMSCapabilities from'ol-ext/control/WMSCapabilities';
+import Permalink from 'ol-ext/control/Permalink';
+
+
 
 import Icon from 'ol/style/Icon'; // Hinzufügen Sie diesen Import
 
@@ -44,6 +49,8 @@ import Bar from 'ol-ext/control/Bar';
 import Toggle from 'ol-ext/control/Toggle'; // Importieren Sie Toggle
 import { Modify, Select } from 'ol/interaction'; // Importieren Sie Draw
 import TextButton from 'ol-ext/control/TextButton';
+
+
 
 //projektion definieren und registrieren
 proj4.defs('EPSG:32632', '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs');
@@ -73,11 +80,7 @@ import {
   getStyleForArtSonLin,
   getStyleForArtGewInfo
 } from './extStyle';
-
 import { UTMToLatLon_Fix } from './myNewFunc';
-
-
-//var popup; // Globale Variable für das Popup
 
 // Funktion zum Verschieben des DIVs
 function dragInfo() {
@@ -110,10 +113,21 @@ const map = new Map({
     new ZoomToExtent({
        extent: [727361, 6839277, 858148, 6990951] // Geben Sie hier das Ausdehnungsintervall an
      }),
-    attribution // Fügen Sie hier Ihre benutzerdefinierte Attribution-Steuerung hinzu
+    attribution,
+   
   ]),
   interactions: defaultInteractions().extend([new DragRotateAndZoom()])
 });
+
+const link = new Link({ params: ['x', 'y', 'z', 'layers'] });
+map.addInteraction(link);
+
+
+// Überwache Änderungen in Layer-Gruppen
+map.getLayers().forEach(layer => {
+  console.log(layer.name)
+});
+
 
 //------------------------------------Attribution collapse
 function checkSize() {
@@ -163,6 +177,7 @@ const gehoelz_vecLayer = new VectorLayer({
 const exp_allgm_fsk_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'fsk',
+  permalink:"fsk", 
   name: 'fsk', 
   style: getStyleForArtFSK,
   visible: false,
@@ -171,7 +186,8 @@ const exp_allgm_fsk_layer = new VectorLayer({
 })
 const exp_bw_son_lin_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_bw_son_lin.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }), 
-  title: 'Sonstig, Linien', 
+  title: 'Sonstig, Linien',
+  permalink:"son_lin", 
   name: 'son_lin',
   style: getStyleForArtSonLin,
   visible: false
@@ -188,6 +204,7 @@ const exp_gew_info_layer = new VectorLayer({
   format: new GeoJSON(),
   url: function (extent) {return './myLayers/exp_gew_info.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Gew, Info', 
+  permalink:"gew_info", 
   name: 'gew_info',
   style: getStyleForArtGewInfo,
   //style: combinedStyle,
@@ -197,68 +214,46 @@ const gew_layer_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/gew.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'gew', // Titel für den Layer-Switcher
   name: 'gew',
-  style: new Style({
-    fill: new Fill({ color: 'rgba(0,28, 240, 0.4)' }),
-    stroke: new Stroke({ color: 'blue', width: 2 })
+  style: new Style({fill: new Fill({ color: 'rgba(0,28, 240, 0.4)' }),stroke: new Stroke({ color: 'blue', width: 2 })
   })
 })
 
 const exp_bw_son_pun_layer = new VectorLayer({
-  source: new VectorSource({
-    format: new GeoJSON(),
-    url: function (extent) {
-      return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); }, 
-    strategy: LoadingStrategy.bbox 
-  }),
+  source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); },strategy: LoadingStrategy.bbox}),
   title: 'Sonstige, Punkte', 
+  permalink:"son_pun", 
   name: 'son_pun', 
   style: getStyleForArtSonPun,
   visible: false
 });
 const exp_bw_ein_layer = new VectorLayer({
-  source: new VectorSource({
-  format: new GeoJSON(),
-  url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
+  source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Einläufe', 
+  permalink:"ein", 
   name: 'ein', 
   style: getStyleForArtEin,
   visible: false
 });
 const exp_bw_que_layer = new VectorLayer({
-  source: new VectorSource({
-    format: new GeoJSON(),
-    url: function (extent) {
-      return './myLayers/exp_bw_que.geojson' + '?bbox=' + extent.join(',');
-    },
-    strategy: LoadingStrategy.bbox
-  }),
+  source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_que.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox}),
   title: 'Querung', 
+  permalink:"que", 
   name: 'que', // Titel für den Layer-Switcher
   style: queStyle,
   visible: false
 });
 const exp_bw_due_layer = new VectorLayer({
-  source: new VectorSource({
-    format: new GeoJSON(),
-    url: function (extent) {
-      return './myLayers/exp_bw_due.geojson' + '?bbox=' + extent.join(',');
-    },
-    strategy: LoadingStrategy.bbox
-  }),
+  source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_due.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox }),
   title: 'Düker', // Titel für den Layer-Switcher
+  permalink:"due", 
   name: 'due', // Titel für den Layer-Switcher
   style: dueStyle,
   visible: false
 });
 const exp_bw_weh_layer = new VectorLayer({
-  source: new VectorSource({
-    format: new GeoJSON(),
-    url: function (extent) {
-      return './myLayers/exp_bw_weh.geojson' + '?bbox=' + extent.join(',');
-    },
-    strategy: LoadingStrategy.bbox
-  }),
+  source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_weh.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox}),
   title: 'Wehr', // Titel für den Layer-Switcher
+  permalink:"weh", 
   name: 'weh', // Titel für den Layer-Switcher
   style: wehStyle,
   visible: false
@@ -266,31 +261,26 @@ const exp_bw_weh_layer = new VectorLayer({
 const exp_bw_bru_nlwkn_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_nlwkn.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Brücke (NLWKN)', 
+  permalink:"bru_nlwkn",
   name: 'bru_nlwkn', // Titel für den Layer-Switcher
   style: bru_nlwknStyle,
   visible: false
 });
 const exp_bw_bru_andere_layer = new VectorLayer({
-  source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_andere.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
-  title: 'Brücke (andere)', 
+  source: new VectorSource({format: new GeoJSON(),url:function (extent) {return './myLayers/exp_bw_bru_andere.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
+  title: 'Brücke (andere)',
+  permalink:"bru_andere", 
   name: 'bru_andere', 
   style: bruAndereStyle,
   visible: false
 });
 const exp_bw_sle_layer = new VectorLayer({
-  source: new VectorSource({
-    format: new GeoJSON(),
-    url: function (extent) {
-      return './myLayers/exp_bw_sle.geojson' + '?bbox=' + extent.join(',');
-    },
-    strategy: LoadingStrategy.bbox
-  }),
+  source: new VectorSource({format: new GeoJSON(),url:function (extent) {return './myLayers/exp_bw_sle.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox }),
   title: 'Schleuse', // Titel für den Layer-Switcher
+  permalink:"sle", 
   name: 'sle', // Titel für den Layer-Switcher
   style: sleStyle,
-  visible: true,
-  trash: false,
-  noOpacitySlider: true // 🔹 Verhindert die Anzeige des Transparenzreglers
+  visible: true, 
 });
 
 const km10scal_layer = new VectorLayer({
@@ -660,15 +650,15 @@ var Alkis_layer = new TileLayer({
   }),
 });
 
+
 const layerSwitcher = new LayerSwitcher({ 
   activationMode: 'click', 
   reverse: true, 
   trash: true, 
   tipLabel: 'Legende', 
-  
  });
 map.addControl(layerSwitcher);
-
+    
 //------------------------------------ Layer für Messung
 const source = new VectorSource();
 const vector = new VectorLayer({
@@ -1715,6 +1705,7 @@ var search = new SearchPhoton({
   position: true	// Search, with priority to geo position
 });
 map.addControl (search);
+
 
 // Select feature when click on the reference index
 search.on('select', function(e){
