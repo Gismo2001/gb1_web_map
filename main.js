@@ -7,7 +7,7 @@ import Feature from 'ol/Feature';
 import Overlay from 'ol/Overlay.js';
 import Draw from 'ol/interaction/Draw.js';
 import {LineString, Polygon, Point, Circle} from 'ol/geom.js';
-import Link from 'ol/interaction/Link.js';
+
 
 
 import {circular} from 'ol/geom/Polygon';
@@ -38,7 +38,7 @@ import SearchPhoton from 'ol-ext/control/SearchPhoton';
 import SearchFeature from 'ol-ext/control/SearchFeature';
 //import SearchNominatim from 'ol-ext/control/SearchNominatim';
 import WMSCapabilities from'ol-ext/control/WMSCapabilities';
-import Permalink from 'ol-ext/control/Permalink';
+
 
 
 
@@ -119,15 +119,6 @@ const map = new Map({
   interactions: defaultInteractions().extend([new DragRotateAndZoom()])
 });
 
-const link = new Link({ params: ['x', 'y', 'z', 'layers'] });
-map.addInteraction(link);
-
-
-// Überwache Änderungen in Layer-Gruppen
-map.getLayers().forEach(layer => {
-  console.log(layer.name)
-});
-
 
 //------------------------------------Attribution collapse
 function checkSize() {
@@ -177,7 +168,7 @@ const gehoelz_vecLayer = new VectorLayer({
 const exp_allgm_fsk_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_allgm_fsk.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'fsk',
-  permalink:"fsk", 
+  //permalink:"fsk", 
   name: 'fsk', 
   style: getStyleForArtFSK,
   visible: false,
@@ -187,7 +178,7 @@ const exp_allgm_fsk_layer = new VectorLayer({
 const exp_bw_son_lin_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_bw_son_lin.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }), 
   title: 'Sonstig, Linien',
-  permalink:"son_lin", 
+  //permalink:"son_lin", 
   name: 'son_lin',
   style: getStyleForArtSonLin,
   visible: false
@@ -204,7 +195,7 @@ const exp_gew_info_layer = new VectorLayer({
   format: new GeoJSON(),
   url: function (extent) {return './myLayers/exp_gew_info.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Gew, Info', 
-  permalink:"gew_info", 
+  //permalink:"gew_info", 
   name: 'gew_info',
   style: getStyleForArtGewInfo,
   //style: combinedStyle,
@@ -221,7 +212,7 @@ const gew_layer_layer = new VectorLayer({
 const exp_bw_son_pun_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_son_pun.geojson' + '?bbox=' + extent.join(','); },strategy: LoadingStrategy.bbox}),
   title: 'Sonstige, Punkte', 
-  permalink:"son_pun", 
+  //permalink:"son_pun", 
   name: 'son_pun', 
   style: getStyleForArtSonPun,
   visible: false
@@ -229,7 +220,7 @@ const exp_bw_son_pun_layer = new VectorLayer({
 const exp_bw_ein_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_ein.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Einläufe', 
-  permalink:"ein", 
+ // permalink:"ein", 
   name: 'ein', 
   style: getStyleForArtEin,
   visible: false
@@ -237,7 +228,7 @@ const exp_bw_ein_layer = new VectorLayer({
 const exp_bw_que_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_que.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox}),
   title: 'Querung', 
-  permalink:"que", 
+ // permalink:"que", 
   name: 'que', // Titel für den Layer-Switcher
   style: queStyle,
   visible: false
@@ -245,7 +236,7 @@ const exp_bw_que_layer = new VectorLayer({
 const exp_bw_due_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_due.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox }),
   title: 'Düker', // Titel für den Layer-Switcher
-  permalink:"due", 
+ // permalink:"due", 
   name: 'due', // Titel für den Layer-Switcher
   style: dueStyle,
   visible: false
@@ -253,7 +244,7 @@ const exp_bw_due_layer = new VectorLayer({
 const exp_bw_weh_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_weh.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox}),
   title: 'Wehr', // Titel für den Layer-Switcher
-  permalink:"weh", 
+  //permalink:"weh", 
   name: 'weh', // Titel für den Layer-Switcher
   style: wehStyle,
   visible: false
@@ -261,7 +252,7 @@ const exp_bw_weh_layer = new VectorLayer({
 const exp_bw_bru_nlwkn_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_bw_bru_nlwkn.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Brücke (NLWKN)', 
-  permalink:"bru_nlwkn",
+  //permalink:"bru_nlwkn",
   name: 'bru_nlwkn', // Titel für den Layer-Switcher
   style: bru_nlwknStyle,
   visible: false
@@ -269,7 +260,7 @@ const exp_bw_bru_nlwkn_layer = new VectorLayer({
 const exp_bw_bru_andere_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url:function (extent) {return './myLayers/exp_bw_bru_andere.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Brücke (andere)',
-  permalink:"bru_andere", 
+  //permalink:"bru_andere", 
   name: 'bru_andere', 
   style: bruAndereStyle,
   visible: false
@@ -277,7 +268,7 @@ const exp_bw_bru_andere_layer = new VectorLayer({
 const exp_bw_sle_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url:function (extent) {return './myLayers/exp_bw_sle.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox }),
   title: 'Schleuse', // Titel für den Layer-Switcher
-  permalink:"sle", 
+  //permalink:"sle", 
   name: 'sle', // Titel für den Layer-Switcher
   style: sleStyle,
   visible: true, 
@@ -650,32 +641,21 @@ var Alkis_layer = new TileLayer({
   }),
 });
 
-// Permalink-Control hinzufügen (wird nicht automatisch sichtbar)
-const ctrl = new Permalink({
-  geohash: /gh=/.test(document.location.href),
-  localStorage: true,
-  onclick: function (url) {
-    console.log("Permalink: " + url);
-    alert("Permalink kopiert: " + url);
-  }
-});
-map.addControl(ctrl);
+
 
 // Manuellen Button für Permalink erstellen
-const permalinkButton = document.createElement("button");
-permalinkButton.innerText = "Permalink";
-permalinkButton.style.position = "absolute";
-permalinkButton.style.top = "10px";
-permalinkButton.style.left = "100px";
-permalinkButton.style.zIndex = "1000";
-permalinkButton.onclick = function () {
-  const url = ctrl.getLink();
-  navigator.clipboard.writeText(url);
-  alert("Permalink kopiert: " + url);
+const tmpButton = document.createElement("button");
+tmpButton.innerText = "test";
+tmpButton.style.position = "absolute";
+tmpButton.style.top = "10px";
+tmpButton.style.left = "100px";
+tmpButton.style.zIndex = "1000";
+tmpButton.onclick = function () {
+   alert("Button gedrcüke");
 };
 
 // Button zum DOM hinzufügen
-document.body.appendChild(permalinkButton);
+document.body.appendChild(tmpButton);
 
 
 const layerSwitcher = new LayerSwitcher({ 
@@ -723,6 +703,8 @@ const pointerMoveHandler = function (evt) {
   }  
 };
 map.on('pointermove', pointerMoveHandler);
+
+
 let draw;
 
 const formatLength = function (line) {
@@ -832,6 +814,7 @@ map.getViewport().addEventListener('contextmenu', function(evt) {
     measureTooltip = null;
     helpTooltipElement = null;
     measureTooltipElement = null;
+    removeAllOverlays();
     
     return; // Beende die Funktion, um weitere Interaktionen zu verhindern
   }
@@ -1196,6 +1179,9 @@ map.on('click', function (evt) {
       var foto4Html = '';
       var urlWKDB = feature.get('URL_WKDB');
       var urlWKDBHtml = '';
+      var url_wk_sb = feature.get('URL_WKSB');
+      console.log(url_wk_sb);
+      var url_wk_sb_Html = '';
 
       if (foto1Value && foto1Value.trim() !== '') {
         foto1Html = '<a href="' + foto1Value + '" onclick="window.open(\'' + foto1Value + '\', \'_blank\'); return false;">Foto 1</a>';
@@ -1217,24 +1203,26 @@ map.on('click', function (evt) {
       } else {
         foto4Html = " Foto 4 ";
       }
-      if (foto4Value && foto4Value.trim() !== '') {
-        foto4Html = '<a href="' + foto4Value + '" onclick="window.open(\'' + foto4Value + '\', \'_blank\'); return false;">Foto 4</a>';
-      } else {
-        foto4Html = " Foto 4 ";
-      }
       if (urlWKDB && urlWKDB.trim() !== '') {
-        urlWKDBHtml = '<a href="' + urlWKDB + '" onclick="window.open(\'' + urlWKDB + '\', \'_blank\'); return false;">WK-Datenblatt</a>';
+        urlWKDBHtml = '<a href="' + urlWKDB + '" onclick="window.open(\'' + urlWKDB + '\', \'_blank\'); return false;">NLWKN-WK</a>';
       } else {
-        urlWKDBHtml = "WK-Datenblatt";
+        urlWKDBHtml = " NLWKN-WK";
       }
+      
+      if (url_wk_sb && url_wk_sb .trim() !== '') {
+        url_wk_sb_Html = '<a href="' + url_wk_sb + '" onclick="window.open(\'' + url_wk_sb + '\', \'_blank\'); return false;">BfG-WK</a>';
+      } else {
+        url_wk_sb_Html = "BfG-WK";
+      }
+      
       coordinates = evt.coordinate; 
       popup.setPosition(coordinates);
       content.innerHTML =
       '<div style="max-height: 300px; overflow-y: auto;">' +
       '<p>Name: ' + feature.get('IDUabschn') + '<br>' + "von " + feature.get('Bez_Anfang') + " bis " + feature.get('Bez_Ende')  + '</p>' +
       '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
-      '<p><a href="' + feature.get('U_Steckbrief') + '" onclick="window.open(\'' + feature.get('U_Steckbrief') + '\', \'_blank\'); return false;">NLWKN-SB</a> '+
-      '<p>' + urlWKDBHtml +
+      '<p><a href="' + feature.get('U_Steckbrief') + '" onclick="window.open(\'' + feature.get('U_Steckbrief') + '\', \'_blank\'); return false;">NLWKN-SB</a> ' + url_wk_sb_Html + " " + urlWKDBHtml + 
+      
       //'<a href="' + feature.get('URL_WKDB') + '" onclick="window.open(\'' + feature.get('URL_WKDB') + '\', \'_blank\'); return false;">WK_DB</a> '+
       //'<a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Karte</a> ' +
       //'<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto</a><br>' +
