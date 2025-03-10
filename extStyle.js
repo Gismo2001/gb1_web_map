@@ -410,12 +410,23 @@ const km500scalStyle = function(feature, km, resolution) {
         return null;
     }
 };
-const arrowStyle = new Style({
-    stroke: new Stroke({
-        color: 'black',
-        width: 4,
-    }),
-});
+
+
+
+function arrowStyle(feature) {   
+    const directionValue = feature.get('Direction') || 0; // Standardwert 0, falls kein Wert vorhanden
+    console.log("aufgerufen");
+    return new Style({
+        
+        image: new Icon({
+            src: './data/arrow.svg', // Ersetze mit dem tatsächlichen Pfad zum Pfeil-Symbol
+            anchor: [0.5, 0.5], // Mittelpunkt als Rotationsachse
+            rotateWithView: true,
+            rotation: (Math.PI / 180) * directionValue // Grad in Radiant umwandeln
+        })
+    });
+}
+
 const endpointStyle = new Style({
     geometry: function (feature) {
         const coordinates = feature.getGeometry().getCoordinates();
@@ -443,8 +454,9 @@ const combinedStyle = [arrowStyle, endpointStyle];
       rotateWithView: true,
     }),
   
-  });
-export { 
+});
+
+ export { 
     bru_nlwknStyle,
     sleStyle,
     wehStyle, 
@@ -464,6 +476,7 @@ export {
     km500scalStyle,
     combinedStyle,
     gpsStyle,
+    arrowStyle,
     machWasMitFSK
 };
    

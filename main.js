@@ -76,6 +76,7 @@ import {
   km100scalStyle,
   km500scalStyle,
   combinedStyle,
+  arrowStyle,
   machWasMitFSK,
   getStyleForArtSonLin,
   getStyleForArtGewInfo
@@ -2153,30 +2154,31 @@ function setInteraction() {
   });
   dragAndDropInteraction.on('addfeatures', function (event) {
     if (!event.file) {
-      console.warn("Kein Dateiname verfügbar.");
-      return;
+        console.warn("Kein Dateiname verfügbar.");
+        return;
     }
-
+    
     let fileName = event.file.name || 'Unbenannt';
     fileName = fileName.replace(/\.[^/.]+$/, ""); // Dateiendung entfernen
-
-    const vectorSource = new VectorSource
-    ({
-      features: event.features, 
-
+    console.log(fileName);
+    
+    const vectorSource = new VectorSource({
+        features: event.features,
     });
-    map.addLayer
-    (new VectorLayer
-      ({
-        source: vectorSource, 
-        title: fileName, // Titel setzen
-      }),
-    );
+
+    // Bedingte Zuweisung des Styles
+    const layerStyle = fileName === 'fot1' ? arrowStyle : undefined;
+
+    map.addLayer(new VectorLayer({
+        source: vectorSource,
+        title: fileName,
+        style: layerStyle, // Wird nur gesetzt, wenn fileName "fot1" ist
+    }));
+
     map.getView().fit(vectorSource.getExtent());
-    }
-  );
-  map.addInteraction(dragAndDropInteraction);
-  
+});
+
+map.addInteraction(dragAndDropInteraction);
 }
 
 
