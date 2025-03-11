@@ -1090,6 +1090,10 @@ var popup = new Overlay({
   duration: 250
   }
 });
+content.addEventListener('contextmenu', function (event) {
+  event.stopPropagation();
+});
+
 map.addOverlay(popup);
 
 closer.onclick = function()
@@ -1930,7 +1934,6 @@ function searchFeaturesByTextEig(searchText) {
 }
 
 // Funktionen zur Bauwerkssuche
-
 function searchFeaturesByTextBw(searchText) {  
   let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
   let matchingFeatures = [];
