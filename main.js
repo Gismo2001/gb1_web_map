@@ -644,20 +644,22 @@ var Alkis_layer = new TileLayer({
 
 
 
-// Manuellen Button für Permalink erstellen
+/* // Manuellen Button für Permalink erstellen
 const tmpButton = document.createElement("button");
-tmpButton.innerText = "test";
+tmpButton.innerHTML = '<i class="icon fa-fw fa fa-arrow-circle-down" aria-hidden="true"></i>';
 tmpButton.style.position = "absolute";
-tmpButton.style.top = "10px";
+tmpButton.style.top = "8px";
 tmpButton.style.left = "100px";
 tmpButton.style.zIndex = "1000";
+tmpButton.style.width = "22px";
+tmpButton.style.height = "22px";
 tmpButton.onclick = function () {
-   alert("Button gedrcüke");
+   alert("Button gedrückt");
 };
-
-// Button zum DOM hinzufügen
 document.body.appendChild(tmpButton);
 
+// Button zum DOM hinzufügen
+document.body.appendChild(tmpButton); */
 
 const layerSwitcher = new LayerSwitcher({ 
   activationMode: 'click', 
@@ -666,10 +668,6 @@ const layerSwitcher = new LayerSwitcher({
   tipLabel: 'Legende', 
  });
 map.addControl(layerSwitcher);
-
-
-
-
     
 //------------------------------------ Layer für Messung
 const source = new VectorSource();
@@ -684,8 +682,6 @@ const vector = new VectorLayer({
     'circle-fill-color': '#ffcc33',
   }, 
 });
-
-
 
 let sketch;
 let measureTooltipElement;
@@ -831,7 +827,6 @@ function removeMeasureResult() {
   measureTooltipElement = null;
 } */
 
-
 //------------------------------------Custom Controls 1 für Linie und für Fläche ........................
 class CustomControls1 extends Control {
   constructor(options) {
@@ -861,7 +856,6 @@ class CustomControls1 extends Control {
 map.addControl(new CustomControls1({
   target: 'custom-controls'
 }));
-
 
 //---------------------------------------------Layergruppen
 const BwGroupP = new LayerGroup({
@@ -910,7 +904,7 @@ const BaseGroup = new LayerGroup({
 });
 map.addLayer(BaseGroup);
 map.addLayer(GNAtlasGroup);
-map.addLayer(exp_allgm_fsk_layer);
+map.addLayer(exp_allgm_fsk_layer);-
 map.addLayer(gew_layer_layer);
 map.addLayer(wmsLayerGroup);
 map.addLayer(kmGroup);
