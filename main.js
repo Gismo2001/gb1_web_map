@@ -8,11 +8,9 @@ import Overlay from 'ol/Overlay.js';
 import Draw from 'ol/interaction/Draw.js';
 import {LineString, Polygon, Point, Circle} from 'ol/geom.js';
 
-
-
-import {circular} from 'ol/geom/Polygon';
+import circular from 'ol/geom/Polygon';
 import Geolocation from 'ol/Geolocation.js';
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
 import {OSM, Vector as VectorSource} from 'ol/source.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
@@ -39,23 +37,12 @@ import SearchFeature from 'ol-ext/control/SearchFeature';
 //import SearchNominatim from 'ol-ext/control/SearchNominatim';
 import WMSCapabilities from'ol-ext/control/WMSCapabilities';
 
-
-
-
 import Icon from 'ol/style/Icon'; // Hinzufügen Sie diesen Import
-
 
 import Bar from 'ol-ext/control/Bar';
 import Toggle from 'ol-ext/control/Toggle'; // Importieren Sie Toggle
 import { Modify, Select } from 'ol/interaction'; // Importieren Sie Draw
 import TextButton from 'ol-ext/control/TextButton';
-
-
-
-//projektion definieren und registrieren
-proj4.defs('EPSG:32632', '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs');
-register(proj4);
-var globalCoordAnOderAus = false;
 
 import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import LayerGroup from 'ol/layer/Group';
@@ -78,10 +65,18 @@ import {
   combinedStyle,
   arrowStyle,
   machWasMitFSK,
+  geojsonStyle,
   getStyleForArtSonLin,
   getStyleForArtGewInfo
 } from './extStyle';
 import { UTMToLatLon_Fix } from './myNewFunc';
+
+
+//projektion definieren und registrieren
+proj4.defs('EPSG:32632', '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs');
+register(proj4);
+var globalCoordAnOderAus = false;
+
 
 // Funktion zum Verschieben des DIVs
 function dragInfo() {
@@ -816,16 +811,7 @@ map.getViewport().addEventListener('contextmenu', function(evt) {
     return; // Beende die Funktion, um weitere Interaktionen zu verhindern
   }
 });
-/* 
-// Funktion zum Entfernen des Messergebnisses
-function removeMeasureResult() {
-  if (measureTooltipElement) {
-    measureTooltipElement.innerHTML = ''; // Löscht den Inhalt des Elements
-  }
-  map.removeOverlay(measureTooltip);
-  measureTooltip = null;
-  measureTooltipElement = null;
-} */
+
 
 //------------------------------------Custom Controls 1 für Linie und für Fläche ........................
 class CustomControls1 extends Control {
@@ -962,8 +948,6 @@ let layer_selected = null; // Setze layer_selected auf null, um sicherzustellen,
 selectFeat.on('select', function (e) {
   e.selected.forEach(function (featureSelected) {
       const layerName = selectFeat.getLayer(featureSelected).get('name');
-      
-
       if (layerName !== 'gew') {
           // Setze layer_selected nur, wenn das layerName nicht 'gew' ist
           layer_selected = selectFeat.getLayer(featureSelected);
@@ -987,7 +971,6 @@ function getLayersInGroup(layerGroup) {
           
       } else {
           // Füge den Layer zur Liste hinzu, wenn e ein TileLayer ist
-          
           layers.push(layer);
       }
   });
@@ -1106,6 +1089,7 @@ map.on('click', function (evt) {
     var feature = map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) 
     {
       var layname = layer.get('name');
+      console.log(layname);
       var beschreibLangValue = feature.get('beschreib_lang');
       var beschreibLangHtml = '';
       if (beschreibLangValue && beschreibLangValue.trim() !== '') {
@@ -1384,9 +1368,8 @@ map.on('click', function (evt) {
           '</div>';
       
     }
-
-        // Führen Sie Aktionen für den Layernamen 'exp_bw_weh' durch
-        if (layname === 'weh') {
+    // Führen Sie Aktionen für den Layernamen 'exp_bw_weh' durch
+    if (layname === 'weh') {
           coordinates = evt.coordinate; 
           popup.setPosition(coordinates);
           var foto1Value = feature.get('foto1');
@@ -1435,8 +1418,7 @@ map.on('click', function (evt) {
                '<p>' + beschreibLangHtml + '</p>' +
               '</div>';
           
-        }
-
+    }
     // Führen Sie Aktionen für den Layernamen 'gehoelz_vecLayer' durch
     if (layname === 'gehoelz_vec') {
       coordinates = evt.coordinate; 
@@ -1471,8 +1453,23 @@ map.on('click', function (evt) {
           '</div>';
       }
     }
-    
-    });
+    // Führen Sie Aktionen für den Layernamen 'fsk' durch
+    if (layname.toLowerCase().startsWith('geojson')) {
+      var att = feature.getProperties();
+      coordinates = evt.coordinate; 
+      popup.setPosition(coordinates);
+      
+      // Erstelle HTML für alle Attribute außer "geometry"
+      let contentHtml = "<strong>Attributwerte:</strong><br><ul>";
+      for (let key in att) {
+          if (key !== 'geometry') { // Geometrie nicht anzeigen
+              contentHtml += `<li><strong>${key}:</strong> ${att[key]}</li>`;
+          }
+      }
+      contentHtml += "</ul>";
+      content.innerHTML = contentHtml;
+  }
+});
   } else if(globalCoordAnOderAus===true) {  
     placeMarkerAndShowCoordinates(evt);
   }
@@ -1834,49 +1831,6 @@ var sub2 = new Bar({
  ]
 });
 
-// ------------------------------------------------Funktion zur Suche und Markierung FSK "
-function highlightFeatureFSK(searchText) {
-  const source = exp_allgm_fsk_layer.getSource();
-  const features = source.getFeatures();
-  let found = false;
-  // Prüfen, ob die erste Stelle eine Zahl oder ein Buchstabe ist
-  const firstChar = searchText.charAt(0);
-  const isNumber = !isNaN(firstChar) && firstChar.trim() !== "";
-  // Wähle das zu durchsuchende Attribut
-  const searchAttribute = isNumber ? "fsk" : "Suche";
-  features.some(feature => {
-    let searchValue = feature.get(searchAttribute);
-    if (searchValue === searchText) {
-      feature.setStyle(highlightStyle);
-      map.getView().fit(feature.getGeometry().getExtent(), { duration: 1000 });
-      currentlyHighlightedFeature = feature; // Speichere das aktuell angeklickte Feature
-      found = true;
-      return true;
-    }
-    return false;
-  });
-  if (!found) {
-    alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
-  }
-}
-//---------------------------------------------- Funktion zur Suche und Markierung Eigentümer"
-function highlightFeatureEig1(feature) {
-  // Falls ein anderes Feature hervorgehoben ist, Stil zurücksetzen
-  if (currentlyHighlightedFeature) {
-    currentlyHighlightedFeature.setStyle(null); // Standard-Stil wiederherstellen
-  }
-  feature.setStyle(highlightStyle);
-  currentlyHighlightedFeature = feature; // Speichert das hervorgehobene Feature
-  // Karte auf das Feature zoomen
-  let geometry = feature.getGeometry();
-  let extent = geometry.getExtent();
-  map.getView().fit(extent, { 
-    duration: 1000, 
-    padding: [50, 50, 50, 50], 
-    maxZoom: 18 
-  });
-}
-
 // Markierungsstil für das gefundene Feature
 const highlightStyle = new Style({
  stroke: new Stroke({
@@ -1888,7 +1842,32 @@ const highlightStyle = new Style({
  })
 });
 
-//----------------------------------------------------- Funktionen zur Eigentümersuche
+//Suche BW
+function searchFeaturesByTextBw(searchText) {  
+  let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
+  let matchingFeatures = [];
+  layers.forEach(layer => {
+      if (!layer) return;
+      let source = layer.getSource();
+      if (!source) return;
+      let features = source.getFeatures();
+      features.forEach(feature => {
+        let properties = feature.getProperties();
+        let name = properties.name ? properties.name.toLowerCase() : '';
+        let beschreib = properties.beschreib ? properties.beschreib.toLowerCase() : '';
+        let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
+        if (name.includes(searchTextLower) || beschreib.includes(searchTextLower)) {
+            matchingFeatures.push({ feature, layer });
+        }
+    });
+  });
+  // Ergebnisse anzeigen
+  displaySearchResultsBw(matchingFeatures);
+  document.getElementById("close-search-results").addEventListener("click", function() {
+    document.getElementById("search-results-container").style.display = "none";
+  });
+}
+//Suche Eig
 function searchFeaturesByTextEig(searchText) {
   let matchingFeatures = [];
   console.log('Suche gestartet Eigentümer');
@@ -1924,35 +1903,9 @@ function searchFeaturesByTextEig(searchText) {
       currentlyHighlightedFeature = null;
     }
   });
-  
 }
 
-// Funktionen zur Bauwerkssuche
-function searchFeaturesByTextBw(searchText) {  
-  let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
-  let matchingFeatures = [];
-  layers.forEach(layer => {
-      if (!layer) return;
-      let source = layer.getSource();
-      if (!source) return;
-      let features = source.getFeatures();
-      features.forEach(feature => {
-        let properties = feature.getProperties();
-        let name = properties.name ? properties.name.toLowerCase() : '';
-        let beschreib = properties.beschreib ? properties.beschreib.toLowerCase() : '';
-        let searchTextLower = searchText.toLowerCase(); // Suchtext ebenfalls in Kleinbuchstaben umwandeln
-        if (name.includes(searchTextLower) || beschreib.includes(searchTextLower)) {
-            matchingFeatures.push({ feature, layer });
-        }
-    });
-  });
-  // Ergebnisse anzeigen
-  displaySearchResultsBw(matchingFeatures);
-  document.getElementById("close-search-results").addEventListener("click", function() {
-    document.getElementById("search-results-container").style.display = "none";
-  });
-}
-
+//Display Ergebnis Suche Bw
 function displaySearchResultsBw(results) {
   let resultContainer = document.getElementById('search-results');
   resultContainer.innerHTML = ''; // Alte Ergebnisse löschen
@@ -1977,9 +1930,7 @@ function displaySearchResultsBw(results) {
       resultContainer.appendChild(listItem);
   });
 }
-
-//let currentlyHighlightedFeature = null; // Speichert das aktuell hervorgehobene Feature
-
+//Display Ergebnis Suche Eig
 function displaySearchResultsEig(results) {
   let resultContainer = document.getElementById('search-results');
   resultContainer.innerHTML = ''; // Alte Ergebnisse löschen
@@ -2007,6 +1958,49 @@ function displaySearchResultsEig(results) {
     listItem.onclick = () => highlightFeatureEig1(feature); // Beim Klicken hervorheben
 
     resultContainer.appendChild(listItem);
+  });
+}
+
+//Suche und Highlight Suche FSK
+function highlightFeatureFSK(searchText) {
+  const source = exp_allgm_fsk_layer.getSource();
+  const features = source.getFeatures();
+  let found = false;
+  // Prüfen, ob die erste Stelle eine Zahl oder ein Buchstabe ist
+  const firstChar = searchText.charAt(0);
+  const isNumber = !isNaN(firstChar) && firstChar.trim() !== "";
+  // Wähle das zu durchsuchende Attribut
+  const searchAttribute = isNumber ? "fsk" : "Suche";
+  features.some(feature => {
+    let searchValue = feature.get(searchAttribute);
+    if (searchValue === searchText) {
+      feature.setStyle(highlightStyle);
+      map.getView().fit(feature.getGeometry().getExtent(), { duration: 1000 });
+      currentlyHighlightedFeature = feature; // Speichere das aktuell angeklickte Feature
+      found = true;
+      return true;
+    }
+    return false;
+  });
+  if (!found) {
+    alert("Kein passendes Feature gefunden!, FSK-Layer sichtbar??");
+  }
+}
+//Highlight Suche Eig
+function highlightFeatureEig1(feature) {
+  // Falls ein anderes Feature hervorgehoben ist, Stil zurücksetzen
+  if (currentlyHighlightedFeature) {
+    currentlyHighlightedFeature.setStyle(null); // Standard-Stil wiederherstellen
+  }
+  feature.setStyle(highlightStyle);
+  currentlyHighlightedFeature = feature; // Speichert das hervorgehobene Feature
+  // Karte auf das Feature zoomen
+  let geometry = feature.getGeometry();
+  let extent = geometry.getExtent();
+  map.getView().fit(extent, { 
+    duration: 1000, 
+    padding: [50, 50, 50, 50], 
+    maxZoom: 18 
   });
 }
 
@@ -2134,50 +2128,75 @@ var sub1 = new Bar({
   ]
 });
 
-
-//const extractStyles = document.getElementById('extractstyles');
 let dragAndDropInteraction;
-
+let zaehler = 0;
 function setInteraction() {
-   dragAndDropInteraction = new DragAndDrop({
-    formatConstructors: [
-      //GPX,
-      GeoJSON,
-      //IGC,
-      // use constructed format to set options
-      //new KML({extractStyles: extractStyles.checked}),
-      //TopoJSON,
-    ],
-  });
-  dragAndDropInteraction.on('addfeatures', function (event) {
-    if (!event.file) {
-        console.warn("Kein Dateiname verfügbar.");
-        return;
+     
+    if (dragAndDropInteraction) {
+        map.removeInteraction(dragAndDropInteraction);
     }
-    
-    let fileName = event.file.name || 'Unbenannt';
-    fileName = fileName.replace(/\.[^/.]+$/, ""); // Dateiendung entfernen
-    console.log(fileName);
-    
-    const vectorSource = new VectorSource({
-        features: event.features,
+
+    dragAndDropInteraction = new DragAndDrop({
+        formatConstructors: [GeoJSON], // Falls mehr Formate nötig, hier ergänzen
     });
 
-    // Bedingte Zuweisung des Styles
-    const layerStyle = fileName === 'fot1' ? arrowStyle : undefined;
+    dragAndDropInteraction.on('addfeatures', function (event) {
+        if (!event.file) {
+            alert ("Kein Dateiname verfügbar.");
+            return;
+        }
 
-    map.addLayer(new VectorLayer({
-        source: vectorSource,
-        title: fileName,
-        style: layerStyle, // Wird nur gesetzt, wenn fileName "fot1" ist
-    }));
+        let fileName = event.file.name.replace(/\.[^/.]+$/, ""); // Dateiendung entfernen
+        console.log("Empfangene Features:", event.features.length);
 
-    map.getView().fit(vectorSource.getExtent());
-});
+        if (event.features.length === 0) {
+            alert("Keine Features aus GeoJSON geladen!");
+            return;
+        }
 
-map.addInteraction(dragAndDropInteraction);
+        console.log("Erstes geladenes Feature:", event.features[0].getProperties());
+
+        // **VectorSource erstellen und Features hinzufügen**
+        const vectorSource = new VectorSource();
+        vectorSource.addFeatures(event.features); 
+        
+        // Bedingte Zuweisung des Styles
+        const layerStyle = fileName === 'fot1' ? arrowStyle : geojsonStyle;
+
+        zaehler++;
+        const vectorLayer = new VectorLayer({
+            source: vectorSource,
+            name: "GeoJson: " + zaehler + " " + fileName, //fileName,
+            name: "GeoJson: " + zaehler + " " + fileName, //fileName,
+            style: layerStyle,
+        });
+
+        map.addLayer(vectorLayer);
+        
+        // **Direkt nach dem Hinzufügen Features ausgeben**
+        vectorSource.once('change', function () {
+            console.log("Das 'change'-Ereignis wurde ausgelöst.");
+            const features = vectorSource.getFeatures();
+            console.log("Anzahl der Features in vectorSource:", features.length);
+
+            if (features.length > 0) {
+                const properties = features[0].getProperties();
+                const attributeNames = Object.keys(properties).filter(key => key !== 'geometry');
+                console.log("Attribute:", attributeNames);
+            } else {
+                console.log("Keine Features im Layer gefunden.");
+            }
+        });
+
+        map.getView().fit(vectorSource.getExtent(), { padding: [20, 20, 20, 20] });
+       
+
+        // Falls OpenLayers Änderungen nicht direkt erkennt
+       
+    });
+
+    map.addInteraction(dragAndDropInteraction);
 }
-
 
 //Mainbar Button "i"
 var mainBar1 = new Bar({
