@@ -414,14 +414,12 @@ const km500scalStyle = function(feature, km, resolution) {
 
 function arrowStyle(feature) {   
     const directionValue = feature.get('Direction') || 0; // Standardwert 0, falls kein Wert vorhanden
-    console.log("aufgerufen");
     return new Style({
-        
         image: new Icon({
-            src: './data/arrow.svg', // Ersetze mit dem tatsächlichen Pfad zum Pfeil-Symbol
-            anchor: [0.5, 0.5], // Mittelpunkt als Rotationsachse
-            rotateWithView: true,
-            rotation: ((Math.PI / 180) * directionValue) - (Math.PI/2) // Grad in Radiant umwandeln
+        src: './data/arrow.svg', // Ersetze mit dem tatsächlichen Pfad zum Pfeil-Symbol
+        anchor: [0.5, 0.5], // Mittelpunkt als Rotationsachse
+        rotateWithView: true,
+        rotation: ((Math.PI / 180) * directionValue) - (Math.PI/2) // Grad in Radiant umwandeln
         })
     });
 }
@@ -442,7 +440,7 @@ function geojsonStyle(feature) {
         return new Style({
             stroke: new Stroke({
                 color: 'red', // Blaue Linienfarbe
-                width: 3 // Linienbreite
+                width: 4 // Linienbreite
             })
         });
     }
@@ -457,8 +455,6 @@ function geojsonStyle(feature) {
 
     return new Style(); // Fallback-Stil
 }
-
-
 
 const endpointStyle = new Style({
     geometry: function (feature) {

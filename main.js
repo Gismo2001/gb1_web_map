@@ -1,6 +1,7 @@
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
+import KML from 'ol/format/KML.js';
 import * as LoadingStrategy from 'ol/loadingstrategy';
 import * as proj from 'ol/proj';
 import Feature from 'ol/Feature';
@@ -1419,6 +1420,39 @@ map.on('click', function (evt) {
               '</div>';
           
     }
+    if (layname === 'fot') {
+      coordinates = evt.coordinate; 
+      popup.setPosition(coordinates);
+      var foto1Value = feature.get('tmp');
+      var foto1Html = '';
+      var foto2Value = feature.get('Path');
+      var foto2Html = '';
+        
+        if (foto1Value && foto1Value.trim() !== '') {
+          foto1Html = '<a href="' + foto1Value + '" onclick="window.open(\'' + foto1Value + '\', \'_blank\'); return false;">Foto 1</a>';
+        } else {
+          foto1Html =   " Foto LW 1 ";
+        }
+        if (foto2Value && foto2Value.trim() !== '') {
+          foto2Html = '<a href="' + foto2Value + '" onclick="window.open(\'' + foto2Value + '\', \'_blank\'); return false;">Foto 2</a>';
+        } else {
+          foto2Html = " Foto LW 2";
+        }
+      
+        var rwert = feature.get('RWert');
+        var hwert = feature.get('HWert');
+        let result = UTMToLatLon_Fix(rwert, hwert, 32, true);
+        content.innerHTML =
+          '<div style="max-height: 200px; overflow-y: auto;">' +
+          '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('REFOBJ_ID') + '</p>' +
+          `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
+          `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
+          '<p>' + "Datum Uhrzeit: " + feature.get('DateTime_') + '</p>' +
+          '<p>' + foto1Html + " " + foto2Html + 
+           '<br>' + '<u>' + "Ordner: " + '</u>' + feature.get('BOrdner') + '</p>' +
+           '</div>';
+      
+    }
     // Führen Sie Aktionen für den Layernamen 'gehoelz_vecLayer' durch
     if (layname === 'gehoelz_vec') {
       coordinates = evt.coordinate; 
@@ -1453,7 +1487,7 @@ map.on('click', function (evt) {
           '</div>';
       }
     }
-    // Führen Sie Aktionen für den Layernamen 'fsk' durch
+    // Führen Sie Aktionen für den Layernamen 'geojson' durch
     if (layname.toLowerCase().startsWith('geojson')) {
       var att = feature.getProperties();
       coordinates = evt.coordinate; 
@@ -1468,7 +1502,23 @@ map.on('click', function (evt) {
       }
       contentHtml += "</ul>";
       content.innerHTML = contentHtml;
-  }
+    }
+    // Führen Sie Aktionen für den Layernamen 'geojson' durch
+    if (layname.toLowerCase().startsWith('kml')) {
+      var att = feature.getProperties();
+      coordinates = evt.coordinate; 
+      popup.setPosition(coordinates);
+      
+      // Erstelle HTML für alle Attribute außer "geometry"
+      let contentHtml = "<strong>Attributwerte:</strong><br><ul>";
+      for (let key in att) {
+          if (key !== 'geometry') { // Geometrie nicht anzeigen
+              contentHtml += `<li><strong>${key}:</strong> ${att[key]}</li>`;
+          }
+      }
+      contentHtml += "</ul>";
+      content.innerHTML = contentHtml;
+    }
 });
   } else if(globalCoordAnOderAus===true) {  
     placeMarkerAndShowCoordinates(evt);
@@ -2121,81 +2171,85 @@ var sub1 = new Bar({
         } else {
         map.removeInteraction(dragAndDropInteraction);
         isActive = false;
-        console.log('dragAndDropInteraction deaktiviert');  
         }
       },
     }),
   ]
 });
 
+
 let dragAndDropInteraction;
-let zaehler = 0;
-function setInteraction() {
-     
-    if (dragAndDropInteraction) {
-        map.removeInteraction(dragAndDropInteraction);
+let zaehlerGeojson = 0;
+let zaehlerKML = 0;
+function setInteraction() 
+{
+  if (dragAndDropInteraction) 
+  {
+  map.removeInteraction(dragAndDropInteraction);
+  }
+  dragAndDropInteraction = new DragAndDrop({
+    formatConstructors: 
+    [
+      GeoJSON, // Falls mehr Formate nötig, hier ergänzen
+      new KML, 
+    ],
+    });
+  dragAndDropInteraction.on('addfeatures', function (event) {
+    if (!event.file) {
+      alert("Kein Dateiname verfügbar.");
+      return;
     }
-
-    dragAndDropInteraction = new DragAndDrop({
-        formatConstructors: [GeoJSON], // Falls mehr Formate nötig, hier ergänzen
+    let fileName = event.file.name.replace(/\.[^/.]+$/, ""); // Dateiendung entfernen
+    let fileEnd = event.file.name.split('.').pop().toLowerCase(); // Dateiendung extrahieren und in Kleinbuchstaben umwandeln
+    if (event.features.length === 0) {
+      alert("Keine Features aus der Datei geladen!");
+      return;
+    }
+    // **VectorSource erstellen und Features hinzufügen**
+    const vectorSource = new VectorSource();
+    vectorSource.addFeatures(event.features);
+    // Name der VectorSource abhängig von der Dateiendung setzen
+    let sourceName;
+    if ((fileEnd === 'geojson' || fileEnd === 'json') && fileName != 'fot') {
+      sourceName = "GeoJson: " + zaehlerGeojson + " " + fileName;
+    } else if (fileEnd === 'kml') {
+      sourceName = "KML: " + zaehlerKML + " " + fileName;
+    } else if (fileName === 'fot') {
+      sourceName = "fot";
+    
+    } else {
+      //sourceName = "Unbekannt: " + " " + fileName;
+    }
+    // Bedingte Zuweisung des Styles
+    const layerStyle = fileName === 'fot' ? arrowStyle : geojsonStyle;
+    zaehlerGeojson++;
+    zaehlerKML++;
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
+      name: sourceName, // Dynamischer Name basierend auf Dateiendung
+      title: sourceName, // Gleicher Titel
+      style: layerStyle,
     });
-
-    dragAndDropInteraction.on('addfeatures', function (event) {
-        if (!event.file) {
-            alert ("Kein Dateiname verfügbar.");
-            return;
+    map.addLayer(vectorLayer);
+    // **Direkt nach dem Hinzufügen Features ausgeben**
+    vectorSource.once('change', function () {
+      console.log("Das 'change'-Ereignis wurde ausgelöst.");
+      const features = vectorSource.getFeatures();
+      if (features.length > 0) {
+        const properties = features[0].getProperties();
+        if (properties && typeof properties === 'object') {
+        const attributeNames = Object.keys(properties).filter(key => key !== 'geometry');
+        } else {
+        alert("Keine gültigen Attribute im Feature gefunden.");
         }
-
-        let fileName = event.file.name.replace(/\.[^/.]+$/, ""); // Dateiendung entfernen
-        console.log("Empfangene Features:", event.features.length);
-
-        if (event.features.length === 0) {
-            alert("Keine Features aus GeoJSON geladen!");
-            return;
+        const attributeNames = Object.keys(properties).filter(key => key !== 'geometry');
+        } else {
+          alert("Keine Features im Layer gefunden.");
         }
-
-        console.log("Erstes geladenes Feature:", event.features[0].getProperties());
-
-        // **VectorSource erstellen und Features hinzufügen**
-        const vectorSource = new VectorSource();
-        vectorSource.addFeatures(event.features); 
-        
-        // Bedingte Zuweisung des Styles
-        const layerStyle = fileName === 'fot1' ? arrowStyle : geojsonStyle;
-
-        zaehler++;
-        const vectorLayer = new VectorLayer({
-            source: vectorSource,
-            name: "GeoJson: " + zaehler + " " + fileName, //fileName,
-            name: "GeoJson: " + zaehler + " " + fileName, //fileName,
-            style: layerStyle,
-        });
-
-        map.addLayer(vectorLayer);
-        
-        // **Direkt nach dem Hinzufügen Features ausgeben**
-        vectorSource.once('change', function () {
-            console.log("Das 'change'-Ereignis wurde ausgelöst.");
-            const features = vectorSource.getFeatures();
-            console.log("Anzahl der Features in vectorSource:", features.length);
-
-            if (features.length > 0) {
-                const properties = features[0].getProperties();
-                const attributeNames = Object.keys(properties).filter(key => key !== 'geometry');
-                console.log("Attribute:", attributeNames);
-            } else {
-                console.log("Keine Features im Layer gefunden.");
-            }
-        });
-
-        map.getView().fit(vectorSource.getExtent(), { padding: [20, 20, 20, 20] });
-       
-
-        // Falls OpenLayers Änderungen nicht direkt erkennt
-       
     });
-
-    map.addInteraction(dragAndDropInteraction);
+    map.getView().fit(vectorSource.getExtent(), { padding: [20, 20, 20, 20] });
+  });
+  map.addInteraction(dragAndDropInteraction);
 }
 
 //Mainbar Button "i"
