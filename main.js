@@ -374,6 +374,9 @@ const wmsGewWmsFgLayer = new TileLayer({
   opacity: 1,
 });
 
+
+
+
 const gnAtlas2023 = new TileLayer({
   source: new TileWMS(({
     url: "https://opendata.lgln.niedersachsen.de/doorman/noauth/dop_wms",
@@ -1519,7 +1522,10 @@ map.on('click', function (evt) {
       contentHtml += "</ul>";
       content.innerHTML = contentHtml;
     }
-});
+}
+
+);
+console.log(feature);
   } else if(globalCoordAnOderAus===true) {  
     placeMarkerAndShowCoordinates(evt);
   }
