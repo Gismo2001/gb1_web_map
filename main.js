@@ -1495,7 +1495,7 @@ map.on('click', function (evt) {
       var att = feature.getProperties();
       coordinates = evt.coordinate; 
       popup.setPosition(coordinates);
-      
+      //********************************************************************************************************* */
       // Erstelle HTML für alle Attribute außer "geometry"
       let contentHtml = "<strong>Attributwerte:</strong><br><ul>";
       for (let key in att) {
@@ -1525,7 +1525,7 @@ map.on('click', function (evt) {
 }
 
 );
-console.log(feature);
+
   } else if(globalCoordAnOderAus===true) {  
     placeMarkerAndShowCoordinates(evt);
   }
@@ -1887,6 +1887,27 @@ var sub2 = new Bar({
  ]
 });
 
+
+/* Nested subbar */
+var sub3 = new Bar({
+  toggleOne: true,
+  controls: [
+   // Suche nach Flurstück
+  new TextButton({
+   html: '<i class="fa fa-external-link"></i>',
+   title: "Permalink",
+   handleClick: function () {
+    
+   }
+  }),
+ 
+ 
+  ]
+ });
+
+
+
+
 // Markierungsstil für das gefundene Feature
 const highlightStyle = new Style({
  stroke: new Stroke({
@@ -2183,6 +2204,34 @@ var sub1 = new Bar({
   ]
 });
 
+var sub2 = new Bar({
+  toggleOne: true,
+  //Die Untermenüs
+  controls:[
+    // Das Untermenü GPS-Position
+    new Toggle({
+      html: '<i class="fa fa-map-marker" ></i>',
+      title: "Permalink",
+      //autoActivate: true,
+      onToggle: 
+      // Funktion zur Anzeige der GPS-Position
+      function () {} ,
+    }),
+    // Das Untermenü 2
+    new Toggle({
+      html:'<i class="fa fa-search"></i>', 
+      title: "Suche",
+      onToggle: function(b) { 
+        //test();
+       },
+      // Second level nested control bar
+      bar: sub2
+    }),
+    
+  ]
+});
+
+
 
 let dragAndDropInteraction;
 let zaehlerGeojson = 0;
@@ -2272,6 +2321,22 @@ var mainBar1 = new Bar({
 });
 map.addControl ( mainBar1 );
 mainBar1.setPosition('left');
+
+
+//Mainbar Button "L"
+var mainBar2 = new Bar({
+  controls: [
+    new Toggle({
+      html: 'L',
+      title: "Bar2",
+      // Untermenü mit zwei Buttons
+      bar: sub3,
+      onToggle: function() { },
+    })
+  ]
+});
+map.addControl ( mainBar2 );
+//mainBar2.setPosition('left');
 
 
 //------------------------WMS-Control aus myFunc.js hinzufügen
