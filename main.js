@@ -1888,26 +1888,6 @@ var sub2 = new Bar({
 });
 
 
-/* Nested subbar */
-var sub3 = new Bar({
-  toggleOne: true,
-  controls: [
-   // Suche nach Flurstück
-  new TextButton({
-   html: '<i class="fa fa-external-link"></i>',
-   title: "Permalink",
-   handleClick: function () {
-    
-   }
-  }),
- 
- 
-  ]
- });
-
-
-
-
 // Markierungsstil für das gefundene Feature
 const highlightStyle = new Style({
  stroke: new Stroke({
@@ -1918,7 +1898,6 @@ const highlightStyle = new Style({
  color: 'rgb(234, 255, 0)'
  })
 });
-
 //Suche BW
 function searchFeaturesByTextBw(searchText) {  
   let layers = [exp_bw_bru_nlwkn_layer, exp_bw_due_layer, exp_bw_sle_layer, exp_bw_weh_layer, exp_bw_bru_andere_layer, exp_bw_ein_layer, exp_bw_que_layer, exp_bw_son_pun_layer ]; 
@@ -1981,7 +1960,6 @@ function searchFeaturesByTextEig(searchText) {
     }
   });
 }
-
 //Display Ergebnis Suche Bw
 function displaySearchResultsBw(results) {
   let resultContainer = document.getElementById('search-results');
@@ -2037,7 +2015,6 @@ function displaySearchResultsEig(results) {
     resultContainer.appendChild(listItem);
   });
 }
-
 //Suche und Highlight Suche FSK
 function highlightFeatureFSK(searchText) {
   const source = exp_allgm_fsk_layer.getSource();
@@ -2080,8 +2057,6 @@ function highlightFeatureEig1(feature) {
     maxZoom: 18 
   });
 }
-
-
 function zoomToFeature(feature) {
     let geometry = feature.getGeometry();
     let extent = geometry.getExtent();
@@ -2101,7 +2076,7 @@ let jsonButtonState = false; // Initialer Zustand
 //Das Untermenü mit drei buttons
 var sub1 = new Bar({
   toggleOne: true,
-  //Die Untermenüs
+   //Die Untermenüs
   controls:[
     // Das Untermenü GPS-Position
     new Toggle({
@@ -2182,10 +2157,10 @@ var sub1 = new Bar({
       html:'<i class="fa fa-search"></i>', 
       title: "Suche",
       onToggle: function(b) { 
-        //test();
+        
        },
-      // Second level nested control bar
       bar: sub2
+      
     }),
     // Das Untermenü GeoJson
     new Toggle({
@@ -2225,13 +2200,11 @@ var sub2 = new Bar({
         //test();
        },
       // Second level nested control bar
-      bar: sub2
+      //bar: sub2
     }),
     
   ]
 });
-
-
 
 let dragAndDropInteraction;
 let zaehlerGeojson = 0;
@@ -2323,20 +2296,6 @@ map.addControl ( mainBar1 );
 mainBar1.setPosition('left');
 
 
-//Mainbar Button "L"
-var mainBar2 = new Bar({
-  controls: [
-    new Toggle({
-      html: 'L',
-      title: "Bar2",
-      // Untermenü mit zwei Buttons
-      bar: sub3,
-      onToggle: function() { },
-    })
-  ]
-});
-map.addControl ( mainBar2 );
-//mainBar2.setPosition('left');
 
 
 //------------------------WMS-Control aus myFunc.js hinzufügen
