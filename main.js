@@ -9,7 +9,8 @@ import Overlay from 'ol/Overlay.js';
 import Draw from 'ol/interaction/Draw.js';
 import {LineString, Polygon, Point, Circle} from 'ol/geom.js';
 
-import circular from 'ol/geom/Polygon';
+//import circular from 'ol/geom/Polygon';
+import { circular } from 'ol/geom/Polygon';
 import Geolocation from 'ol/Geolocation.js';
 import jsPDF from "jspdf";
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
