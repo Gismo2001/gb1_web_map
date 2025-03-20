@@ -2074,6 +2074,8 @@ window.closeSearchResults = function () {
   document.getElementById("search-results-container").style.display = "none";
 };
 let jsonButtonState = false; // Initialer Zustand
+
+
 //Das Untermenü mit drei buttons
 var sub1 = new Bar({
   toggleOne: true,
@@ -2184,28 +2186,119 @@ var sub2 = new Bar({
   toggleOne: true,
   //Die Untermenüs
   controls:[
-    // Das Untermenü GPS-Position
+    // Das Untermenü für WFS-Layer hinzufügen
     new Toggle({
       html: '<i class="fa fa-map-marker" ></i>',
-      title: "Permalink",
+      title: "WFS-Layer",
       //autoActivate: true,
-      onToggle: 
-      // Funktion zur Anzeige der GPS-Position
-      function () {} ,
+      onToggle: function () {
+        // Überprüfen, ob das Eingabefenster bereits existiert
+        let inputDiv = document.getElementById("wfsInputDiv");
+        if (!inputDiv) {
+          inputDiv = document.createElement("div");
+          inputDiv.id = "wfsInputDiv";
+          inputDiv.style.position = "absolute";
+          inputDiv.style.top = "50px";
+          inputDiv.style.left = "50px";
+          inputDiv.style.padding = "10px";
+          inputDiv.style.background = "white";
+          inputDiv.style.border = "1px solid black";
+          inputDiv.style.zIndex = "10000";
+      
+          let input = document.createElement("input");
+          input.type = "text";
+          input.id = "wfsUrlInput";
+          input.placeholder = "WFS-Layer URL eingeben";
+          input.style.width = "250px";
+      
+          let button = document.createElement("button");
+          button.innerText = "Hinzufügen";
+          button.onclick = function () {
+            let wfsUrl = document.getElementById("wfsUrlInput").value;
+            if (wfsUrl) {
+              addWFSLayer(wfsUrl);
+              document.body.removeChild(inputDiv);
+            }
+          };
+      
+          let closeButton = document.createElement("button");
+          closeButton.innerText = "X";
+          closeButton.style.marginLeft = "10px";
+          closeButton.onclick = function () {
+            document.body.removeChild(inputDiv);
+          };
+      
+          inputDiv.appendChild(input);
+          inputDiv.appendChild(button);
+          inputDiv.appendChild(closeButton);
+          document.body.appendChild(inputDiv);
+        }
+      },
+      
+      
+      
     }),
-    // Das Untermenü 2
+    // Das Untermenü 2, noch ohne Funktion
     new Toggle({
-      html:'<i class="fa fa-search"></i>', 
-      title: "Suche",
+      html:'L', 
+      title: "Fehlt",
       onToggle: function(b) { 
-        //test();
+        //hier Code einfügen
        },
-      // Second level nested control bar
-      //bar: sub2
     }),
-    
   ]
 });
+
+/*
+// Funktion zum Hinzufügen eines WFS-Layers
+function addWFSLayer(wfsUrl) {
+  let wfsLayer = new VectorLayer({
+    source: new VectorSource({
+      format: new GeoJSON(),
+      url: function (extent) {
+        return `${wfsUrl}?service=WFS&version=1.1.0&request=GetFeature&typename=your_layer_name&outputFormat=application/json&srsname=EPSG:3857&bbox=${extent.join(",")},EPSG:3857`;
+        
+      },
+      //strategy: loadingstrategy.bbox,
+      
+    }),
+    style: new Style({
+      stroke: new Stroke({
+        color: "blue",
+        width: 2,
+      }),
+      fill: new Fill({
+        color: "rgba(0, 0, 255, 0.1)",
+      }),
+    }),
+  });
+
+  map.addLayer(wfsLayer);
+}
+*/
+
+//Mainbar Button "i"
+var mainBar1 = new Bar({
+  controls: [
+    new Toggle({
+      html: '<i class="fa fa-info"></i>',
+      title: "Weitere Funktionen",
+      // Untermenü mit zwei Buttons
+      bar: sub1,
+      onToggle: function() { },
+    }),
+    new Toggle({
+      html: 'W',
+      title: "Weitere Funktionen",
+      // Untermenü mit zwei Buttons
+      bar: sub2,
+      onToggle: function() { },
+    })
+  ]
+});
+map.addControl ( mainBar1 );
+mainBar1.setPosition('left');
+
 
 let dragAndDropInteraction;
 let zaehlerGeojson = 0;
@@ -2281,20 +2374,6 @@ function setInteraction()
   map.addInteraction(dragAndDropInteraction);
 }
 
-//Mainbar Button "i"
-var mainBar1 = new Bar({
-  controls: [
-    new Toggle({
-      html: '<i class="fa fa-info"></i>',
-      title: "Weitere Funktionen",
-      // Untermenü mit zwei Buttons
-      bar: sub1,
-      onToggle: function() { },
-    })
-  ]
-});
-map.addControl ( mainBar1 );
-mainBar1.setPosition('left');
 
 
 
