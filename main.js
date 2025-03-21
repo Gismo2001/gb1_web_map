@@ -137,7 +137,39 @@ let watchId = null; // Variable, um die Watch-ID der Geolokalisierung zu speiche
 const locateP = document.createElement('div');
 let isActive = false; // Variable, um den Aktivierungsstatus der Geolokalisierung zu verfolgen
 
-//*************neuer Layer
+const WFS_vectorSource = new VectorSource({
+  format: new GeoJSON(),
+  url: function (extent) {
+    return (
+      'https://geodaten.emsland.de/core-services/services/lkel_fb67_wasserwirtschaft_wfs?' +
+      'service=WFS&version=1.1.0&request=GetFeature&' +
+      'typename=lkel_fb67_landwirtschaftliche_feldberegung_oberflaechengewaesser&' +  
+      'outputFormat=application/json&srsname=EPSG:3857&' +
+      'bbox=' + extent.join(',') + ',EPSG:3857'
+    );
+  },
+  strategy: LoadingStrategy.bbox,
+});
+
+const WFS_vector = new VectorLayer({
+  source: WFS_vectorSource,
+  style: new Style({
+    stroke: new Stroke({
+      color: 'white',
+      width: 0.75,
+    }),
+    fill: new Fill({
+      color: 'rgba(100,100,100,0.25)',
+    }),
+  }),
+  title: 'WFS',
+});
+
+map.addLayer(WFS_vector);
+
+
+
+//die Layer
 const exp_gew_fla_vecLayer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(), url: function (extent) {return './myLayers/exp_gew_info_fla.geojson' + '?bbox=' + extent.join(','); }, strategy: LoadingStrategy.bbox }),
   title: 'Gewässerflächen', // Titel für den Layer-Switcher
@@ -1144,6 +1176,8 @@ map.on('click', function (evt) {
          '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
          '<p>' + "Id = " + feature.get('bw_id') +  ' (' + (feature.get('KTR') ? feature.get('KTR') : 'k.A.') + ')' +  '</p>' +
          '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
+         //'<p>' + "Bemerk = " + feature.get('bemerk') + '</p>' +
+         '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
          '<p>' + "Bauj. = " + (feature.get('baujahr') ? feature.get('baujahr') : 'k.A.') + '</p>' +
          `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
          `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
@@ -1316,6 +1350,7 @@ map.on('click', function (evt) {
           '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
           '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
           '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
+          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
           '<p>' + "Bauj. = " + feature.get('baujahr') + '</p>' +
           '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
            '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('beschreib') + '</p>' +
@@ -1363,6 +1398,7 @@ map.on('click', function (evt) {
           '<div style="max-height: 200px; overflow-y: auto;">' +
           '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
           '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
+          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
           '<p>' + "WSP (OW) = " + feature.get('WSP_OW') + " m" +  "  WSP (UW) = " + feature.get('WSP_UW') + " m" + '</p>' +
           `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
           `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
@@ -1413,6 +1449,7 @@ map.on('click', function (evt) {
               '<div style="max-height: 200px; overflow-y: auto;">' +
               '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
               '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
+              '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
               //'<p>' + "WSP1 (OW) = " + feature.get('Ziel_OW1').toFixed(2) + " m" +  "  WSP2 (OW) = " + feature.get('Ziel_OW2').toFixed(2) + " m" + '</p>' +
               `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
               `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
