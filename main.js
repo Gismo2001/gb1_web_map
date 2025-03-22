@@ -7,11 +7,12 @@ import * as proj from 'ol/proj';
 import Feature from 'ol/Feature';
 import Overlay from 'ol/Overlay.js';
 import Draw from 'ol/interaction/Draw.js';
-import {LineString, Polygon, Point, Circle} from 'ol/geom.js';
 
+import {LineString, Polygon, Point, Circle} from 'ol/geom.js';
 //import circular from 'ol/geom/Polygon';
 import { circular } from 'ol/geom/Polygon';
 import Geolocation from 'ol/Geolocation.js';
+
 import jsPDF from "jspdf";
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
 import {OSM, Vector as VectorSource} from 'ol/source.js';
@@ -101,8 +102,6 @@ const mapView = new View({
   zoom: 9
 });
 
-
-
 const map = new Map({
   target: "map",
   view: mapView,
@@ -137,6 +136,7 @@ let watchId = null; // Variable, um die Watch-ID der Geolokalisierung zu speiche
 const locateP = document.createElement('div');
 let isActive = false; // Variable, um den Aktivierungsstatus der Geolokalisierung zu verfolgen
 
+/*
 const WFS_vectorSource = new VectorSource({
   format: new GeoJSON(),
   url: function (extent) {
@@ -166,7 +166,7 @@ const WFS_vector = new VectorLayer({
 });
 
 map.addLayer(WFS_vector);
-
+*/
 
 
 //die Layer
@@ -258,7 +258,7 @@ const exp_bw_ein_layer = new VectorLayer({
 const exp_bw_que_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_que.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox}),
   title: 'Querung', 
- // permalink:"que", 
+  permalink:"que", 
   name: 'que', // Titel für den Layer-Switcher
   style: queStyle,
   visible: false
@@ -649,6 +649,7 @@ const osmTileGr = new TileLayer({
 const osmTileCr = new TileLayer({
   title: "osm-color",
   name: "osm-color",
+  permalink: "osm-color",
   type: 'base',
   source: new OSM({
       url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -936,6 +937,9 @@ map.addLayer(BwGroupP);
 map.addLayer(vector); 
 //Ende Layer hinzufügen---------------------------------------
 
+ 
+
+
 //-----------------------------------------------------------------Info für WMS-Layer
 var toggleButtonU = new Toggle({
   html: '<i class="icon fa-fw fa fa-arrow-circle-down" aria-hidden="true"></i>',
@@ -1177,7 +1181,7 @@ map.on('click', function (evt) {
          '<p>' + "Id = " + feature.get('bw_id') +  ' (' + (feature.get('KTR') ? feature.get('KTR') : 'k.A.') + ')' +  '</p>' +
          '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
          //'<p>' + "Bemerk = " + feature.get('bemerk') + '</p>' +
-         '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
+         '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.')  +  '</p>' +
          '<p>' + "Bauj. = " + (feature.get('baujahr') ? feature.get('baujahr') : 'k.A.') + '</p>' +
          `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
          `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
@@ -1249,6 +1253,7 @@ map.on('click', function (evt) {
       //'<a href="' + feature.get('foto1') + '" onclick="window.open(\'' + feature.get('foto1') + '\', \'_blank\'); return false;">Karte</a> ' +
       //'<a href="' + feature.get('foto2') + '" onclick="window.open(\'' + feature.get('foto2') + '\', \'_blank\'); return false;">Foto</a><br>' +
       '<p><a href="' + feature.get('BSB') + '" onclick="window.open(\'' + feature.get('BSB') + '\', \'_blank\'); return false;">BSB  </a>' +
+      '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.')  +  '</p>' +
       '<a href="' + feature.get('MNB') + '" onclick="window.open(\'' + feature.get('MNB') + '\', \'_blank\'); return false;"> MNB</a><br> ' +
       'Kat: ' + feature.get('Kat') + '</a>' +
       ', KTR: ' + feature.get('KTR') + '</a>' +
@@ -1305,6 +1310,7 @@ map.on('click', function (evt) {
           '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
           '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
           '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
+          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.')  +  '</p>' +
           '<p>' + "Bauj. = " + feature.get('baujahr') + '</p>' +
           '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
            '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('beschreib') + '</p>' +
@@ -1350,7 +1356,7 @@ map.on('click', function (evt) {
           '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
           '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
           '<p>' + "U-Pflicht = " + feature.get('upflicht') + '</p>' +
-          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
+          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.')  +  '</p>' +
           '<p>' + "Bauj. = " + feature.get('baujahr') + '</p>' +
           '<p>' + foto1Html + " " + foto2Html + " " + foto3Html + " " + foto4Html + 
            '<br>' + '<u>' + "Beschreibung (kurz): " + '</u>' + feature.get('beschreib') + '</p>' +
@@ -1398,7 +1404,7 @@ map.on('click', function (evt) {
           '<div style="max-height: 200px; overflow-y: auto;">' +
           '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
           '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
-          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
+          '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.')  +  '</p>' +
           '<p>' + "WSP (OW) = " + feature.get('WSP_OW') + " m" +  "  WSP (UW) = " + feature.get('WSP_UW') + " m" + '</p>' +
           `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
           `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
@@ -1449,7 +1455,7 @@ map.on('click', function (evt) {
               '<div style="max-height: 200px; overflow-y: auto;">' +
               '<p style="font-weight: bold; text-decoration: underline;">' + feature.get('name') + '</p>' +
               '<p>' + "Id = " + feature.get('bw_id') +  ' (' + feature.get('KTR') +')' +  '</p>' +
-              '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.') + ')' +  '</p>' +
+              '<p>' + "Bemerk = " + (feature.get('bemerk') ? feature.get('bemerk') : 'k.A.')  +  '</p>' +
               //'<p>' + "WSP1 (OW) = " + feature.get('Ziel_OW1').toFixed(2) + " m" +  "  WSP2 (OW) = " + feature.get('Ziel_OW2').toFixed(2) + " m" + '</p>' +
               `<p><a href="https://www.google.com/maps?q=${result}" target="_blank" rel="noopener noreferrer">Google Maps link</a></p>` +
               `<p><a href="https://www.google.com/maps?q=&layer=c&cbll=${result}&cbp=12,90,0,0,1" target="_blank" rel="noopener noreferrer">streetview</a></p>` +
@@ -1528,6 +1534,7 @@ map.on('click', function (evt) {
           '</div>';
       }
     }
+    
     // Führen Sie Aktionen für den Layernamen 'geojson' durch
     if (layname.toLowerCase().startsWith('geojson')) {
       var att = feature.getProperties();
@@ -1544,7 +1551,7 @@ map.on('click', function (evt) {
       contentHtml += "</ul>";
       content.innerHTML = contentHtml;
     }
-    // Führen Sie Aktionen für den Layernamen 'geojson' durch
+    // Führen Sie Aktionen für den Layernamen 'kml' durch
     if (layname.toLowerCase().startsWith('kml')) {
       var att = feature.getProperties();
       coordinates = evt.coordinate; 
@@ -2218,18 +2225,13 @@ var sub1 = new Bar({
     }),
   ]
 });
-
 var sub2 = new Bar({
   toggleOne: true,
-  //Die Untermenüs
   controls:[
-    // Das Untermenü für WFS-Layer hinzufügen
     new Toggle({
       html: '<i class="fa fa-map-marker" ></i>',
       title: "WFS-Layer",
-      //autoActivate: true,
       onToggle: function () {
-        // Überprüfen, ob das Eingabefenster bereits existiert
         let inputDiv = document.getElementById("wfsInputDiv");
         if (!inputDiv) {
           inputDiv = document.createElement("div");
@@ -2252,6 +2254,7 @@ var sub2 = new Bar({
           button.innerText = "Hinzufügen";
           button.onclick = function () {
             let wfsUrl = document.getElementById("wfsUrlInput").value;
+            
             if (wfsUrl) {
               addWFSLayer(wfsUrl);
               document.body.removeChild(inputDiv);
@@ -2271,33 +2274,42 @@ var sub2 = new Bar({
           document.body.appendChild(inputDiv);
         }
       },
-      
-      
-      
     }),
-    // Das Untermenü 2, noch ohne Funktion
     new Toggle({
       html:'L', 
       title: "Fehlt",
       onToggle: function(b) { 
-        //hier Code einfügen
        },
     }),
   ]
 });
 
-/*
-// Funktion zum Hinzufügen eines WFS-Layers
+// Funktion zum Hinzufügen eines WFS-Layers mit dynamischer BBOX-Anpassung
 function addWFSLayer(wfsUrl) {
+  console.log(wfsUrl);
   let wfsLayer = new VectorLayer({
+    name: "GeoJson: " + wfsUrl,
+    title: "GeoJson: " + wfsUrl,
     source: new VectorSource({
       format: new GeoJSON(),
       url: function (extent) {
-        return `${wfsUrl}?service=WFS&version=1.1.0&request=GetFeature&typename=your_layer_name&outputFormat=application/json&srsname=EPSG:3857&bbox=${extent.join(",")},EPSG:3857`;
+        let zoom = map.getView().getZoom();
+        let scaleFactor = 1 + (3 - zoom) * 0.3;
+        scaleFactor = Math.max(1, Math.min(scaleFactor, 3));
         
+        let minX = extent[0], minY = extent[1], maxX = extent[2], maxY = extent[3];
+        let width = maxX - minX;
+        let height = maxY - minY;
+
+        let newMinX = minX - (width * (scaleFactor - 1) / 2);
+        let newMinY = minY - (height * (scaleFactor - 1) / 2);
+        let newMaxX = maxX + (width * (scaleFactor - 1) / 2);
+        let newMaxY = maxY + (height * (scaleFactor - 1) / 2);
+
+        let adjustedExtent = [newMinX, newMinY, newMaxX, newMaxY];
+        return `${wfsUrl}?service=WFS&version=1.1.0&request=GetFeature&typename=vg2500:vg2500_lan&maxFeatures=10&outputFormat=application/json&srsname=EPSG:3857&bbox=${adjustedExtent.join(",")},EPSG:3857`;
       },
-      //strategy: loadingstrategy.bbox,
-      
+      strategy: LoadingStrategy.bbox,
     }),
     style: new Style({
       stroke: new Stroke({
@@ -2309,10 +2321,9 @@ function addWFSLayer(wfsUrl) {
       }),
     }),
   });
-
+  
   map.addLayer(wfsLayer);
 }
-*/
 
 //Mainbar Button "i"
 var mainBar1 = new Bar({

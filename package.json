@@ -15,9 +15,10 @@
   },
   
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "jspdf": "^2.5.1",
     "kompas": "^0.0.2",
-    "ol": "9.0.0",
+    "ol": "^10.4.0",
     "ol-ext": "^4.0.17",
     "permalinks": "^2.0.0",
     "proj4": "^2.11.0"
