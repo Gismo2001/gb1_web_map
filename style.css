@@ -251,7 +251,7 @@ html {
   bottom: 15px;
   left: 40px;
   transform: translateX(-50%);
-  z-index: 1005;
+  z-index: 1000;
   font-size: 16px;
   font-weight: bold; 
 }
