@@ -133,44 +133,46 @@ map.addControl(new CanvasTitle({
   })
 }));
 
+
+
 // Print control
 var printControl = new PrintDialog({ 
-   target: document.querySelector('.info'),
-  // targetDialog: map.getTargetElement() 
-  // save: false,
-  // copy: false,
-  // pdf: false
+  target: document.querySelector('.info'),
 });
 printControl.setSize('A4');
 
 map.addControl(printControl);
-printControl.element.classList.add('print-button');
+//printControl.element.classList.add('print-button');
 
 
+// Button-Click-Event für den Druck auslösen
+document.getElementById('printControl').addEventListener('click', function() {
+   printControl.print(); // Startet den Druckprozess
+});
 
 /* On print > save image file */
 printControl.on(['print', 'error'], function(e) {
-  // Print success
-  if (e.image) {
-    if (e.pdf) {
-      // Export pdf using the print info
-      var pdf = new jsPDF({
-        orientation: e.print.orientation,
-        unit: e.print.unit,
-        format: e.print.size
-      });
-      pdf.addImage(e.image, 'JPEG', e.print.position[0], e.print.position[0], e.print.imageWidth, e.print.imageHeight);
-      pdf.save(e.print.legend ? 'legend.pdf' : 'map.pdf');
-    } else  {
-      // Save image as file
-      e.canvas.toBlob(function(blob) {
-        var name = (e.print.legend ? 'legend.' : 'map.')+e.imageType.replace('image/','');
-        saveAs(blob, name);
-      }, e.imageType, e.quality);
-    }
-  } else {
-    console.warn('No canvas to export');
-  }
+ // Print success
+ if (e.image) {
+   if (e.pdf) {
+     // Export pdf using the print info
+     var pdf = new jsPDF({
+       orientation: e.print.orientation,
+       unit: e.print.unit,
+       format: e.print.size
+     });
+     pdf.addImage(e.image, 'JPEG', e.print.position[0], e.print.position[1], e.print.imageWidth, e.print.imageHeight);
+     pdf.save(e.print.legend ? 'legend.pdf' : 'map.pdf');
+   } else  {
+     // Save image as file
+     e.canvas.toBlob(function(blob) {
+       var name = (e.print.legend ? 'legend.' : 'map.')+e.imageType.replace('image/','');
+       saveAs(blob, name);
+     }, e.imageType, e.quality);
+   }
+ } else {
+   console.warn('No canvas to export');
+ }
 });
 
 //------------------------------------Attribution collapse
@@ -1865,58 +1867,6 @@ function addMarker(coordinates) {
 var userInput = ""; // Globale Variable zur Speicherung der Nutzereingabe
 var currentlyHighlightedFeature = null; // Variable zur Verfolgung des aktuell markierten Features
 
-/* Nested subbar */
-var sub2 = new Bar({
- toggleOne: true,
- controls: [
-  // Suche nach Flurstück
- new TextButton({
-  html: '<i class="fa fa-map" ></i>',
-  title: "Flurstückssuche",
-  handleClick: function () {
-    if (currentlyHighlightedFeature) {
-      // Wenn ein Feature bereits markiert wurde, hebe die Markierung auf und setze zurück
-      currentlyHighlightedFeature.setStyle(null); 
-      currentlyHighlightedFeature = null; 
-    } else {
-      // Fordere den Nutzer zur Eingabe auf
-      userInput = prompt("gem flur zähler/nenner oder fsk-id:", "");
-      if (userInput) {
-        highlightFeatureFSK(userInput);
-      }
-    }
-  }
- }),
- // Suche nach Bauwerk
- new TextButton({
-  html: '<i class="fa fa-anchor" ></i>',
-  title: "Suche bw",
-  handleClick: function () {
-    let searchText = prompt("Geben Sie den Suchtext ein:");
-    if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByTextBw(searchText);
-      document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
-    } else {
-      alert("Bitte geben Sie einen gültigen Suchtext ein.");
-    }
-  }
- }),
- // Suche nach Eigentümer
- new TextButton({
-  html: '<i class="fa fa-anchor"></i>',
-  title: "Suche Eigentümer",
-  handleClick: function () {
-    let searchText = prompt("Geben Sie den Suchtext ein:");
-    if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
-      let results = searchFeaturesByTextEig(searchText);
-      document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
-    } else {
-      alert("Bitte geben Sie einen gültigen Suchtext ein.");
-    }
-  }
- })
- ]
-});
 
 
 // Markierungsstil für das gefundene Feature
@@ -2105,6 +2055,58 @@ window.closeSearchResults = function () {
 };
 let jsonButtonState = false; // Initialer Zustand
 
+/* Nested subbar */
+var sub2 = new Bar({
+  toggleOne: true,
+  controls: [
+   // Suche nach Flurstück
+  new TextButton({
+   html: '<i class="fa fa-map" ></i>',
+   title: "Flurstückssuche",
+   handleClick: function () {
+     if (currentlyHighlightedFeature) {
+       // Wenn ein Feature bereits markiert wurde, hebe die Markierung auf und setze zurück
+       currentlyHighlightedFeature.setStyle(null); 
+       currentlyHighlightedFeature = null; 
+     } else {
+       // Fordere den Nutzer zur Eingabe auf
+       userInput = prompt("gem flur zähler/nenner oder fsk-id:", "");
+       if (userInput) {
+         highlightFeatureFSK(userInput);
+       }
+     }
+   }
+  }),
+  // Suche nach Bauwerk
+  new TextButton({
+   html: '<i class="fa fa-caret-up"></i>',
+   title: "Suche bw",
+   handleClick: function () {
+     let searchText = prompt("Geben Sie den Suchtext ein:");
+     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
+       let results = searchFeaturesByTextBw(searchText);
+       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
+     } else {
+       alert("Bitte geben Sie einen gültigen Suchtext ein.");
+     }
+   }
+  }),
+  // Suche nach Eigentümer
+  new TextButton({
+   html: '<i class="fa fa-file"></i>',
+   title: "Suche Eigentümer",
+   handleClick: function () {
+     let searchText = prompt("Geben Sie den Suchtext ein:");
+     if (searchText && searchText.trim() !== "") { // Falls der Nutzer etwas eingegeben hat
+       let results = searchFeaturesByTextEig(searchText);
+       document.getElementById("search-results-container").style.display = "block"; // Zeige das div an
+     } else {
+       alert("Bitte geben Sie einen gültigen Suchtext ein.");
+     }
+   }
+  })
+  ]
+ });
 
 //Das Untermenü mit drei buttons
 var sub1 = new Bar({
@@ -2297,8 +2299,8 @@ function addWFSLayer(wfsUrl) {
 
         const layerName = "vg2500:vg2500_lan"; // Hier kannst du den Layer-Namen dynamisch setzen
 
-        return `${wfsUrl}?Service=WFS&Request=GetCapabilities&version=1.1.0&request=GetFeature&typename=${wfsLayName}&maxFeatures=10&outputFormat=application/json&srsname=EPSG:3857&bbox=${adjustedExtent.join(",")},EPSG:3857`;
-                        
+        return `${wfsUrl}?service=WFS&version=1.1.0&request=GetFeature&typename=${wfsLayName}&maxFeatures=10&outputFormat=application/json&srsname=EPSG:3857&bbox=${adjustedExtent.join(",")},EPSG:3857`;
+
       },
       strategy: LoadingStrategy.bbox,
     }),
