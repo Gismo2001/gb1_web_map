@@ -135,21 +135,16 @@ map.addControl(new CanvasTitle({
 
 // Print control
 var printControl = new PrintDialog({ 
-  // target: document.querySelector('.info'),
+   target: document.querySelector('.info'),
   // targetDialog: map.getTargetElement() 
   // save: false,
   // copy: false,
   // pdf: false
 });
 printControl.setSize('A4');
+
 map.addControl(printControl);
 printControl.element.classList.add('print-button');
-
-
-
-
-
-
 
 
 
@@ -1788,82 +1783,6 @@ document.getElementById('popup-closer').onclick = function () {
   return false;
 };
 
-
-
-//---------------------------------------------------------------------------Print
-const dims = {
-  a0: [1189, 841],
-  a1: [841, 594],
-  a2: [594, 420],
-  a3: [420, 297],
-  a4: [297, 210],
-  a5: [210, 148],
-};
-
-document.getElementById('print-button').addEventListener('click', function() {
-  //document.getElementById('print-button').disabled = true;
-  alert('Erstmal bitte nur mit OSM als Hintergrund');
-  document.body.style.cursor = 'progress';
-  const format = 'a4';//document.getElementById('format').value;
-  const resolution = '72' //document.getElementById('resolution').value;
-  const dim = dims[format];
-  const width = Math.round((dim[0] * resolution) / 25.4);
-  const height = Math.round((dim[1] * resolution) / 25.4);
-  const size = map.getSize();
-  const viewResolution = map.getView().getResolution();
-  map.once('rendercomplete', function () {
-    const mapCanvas = document.createElement('canvas');
-    mapCanvas.width = width;
-    mapCanvas.height = height;
-    const mapContext = mapCanvas.getContext('2d');
-    Array.prototype.forEach.call(
-      document.querySelectorAll('.ol-layer canvas'),
-      function (canvas) {
-        if (canvas.width > 0) {
-          const opacity = canvas.parentNode.style.opacity;
-          mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
-          const transform = canvas.style.transform;
-          // Get the transform parameters from the style's transform matrix
-          const matrix = transform
-            .match(/^matrix\(([^\(]*)\)$/)[1]
-            .split(',')
-            .map(Number);
-          // Apply the transform to the export map context
-          CanvasRenderingContext2D.prototype.setTransform.apply(
-            mapContext,
-            matrix,
-          );
-          mapContext.drawImage(canvas, 0, 0);
-        }
-      },
-    );
-    mapContext.globalAlpha = 1;
-    mapContext.setTransform(1, 0, 0, 1, 0, 0);
-    const pdf = new jsPDF('landscape', undefined, format);
-    pdf.addImage(
-      mapCanvas.toDataURL('image/jpeg'),
-      'JPEG',
-      0,
-      0,
-      dim[0],
-      dim[1],
-    );
-    pdf.save('map.pdf');
-    // Reset original map size
-    map.setSize(size);
-    map.getView().setResolution(viewResolution);
-    document.getElementById('print-button').disabled = false; //exportButton.disabled = false;
-    document.body.style.cursor = 'auto';
-  });
-  // Set print size
-  const printSize = [width, height];
-  map.setSize(printSize);
-  const scaling = Math.min(width / size[0], height / size[1]);
-  map.getView().setResolution(viewResolution / scaling);
-},
-false,
-);
-
 // Current selection
 var sLayer = new VectorLayer({
   source: new VectorSource(),
@@ -2296,7 +2215,7 @@ var sub2 = new Bar({
   toggleOne: true,
   controls:[
     new Toggle({
-      html: '<i class="fa fa-map-marker" ></i>',
+      html: '<i class="fa fa-image"></i>',
       title: "WFS-Layer",
       onToggle: function () {
         let inputDiv = document.getElementById("wfsInputDiv");
@@ -2360,6 +2279,7 @@ function addWFSLayer(wfsUrl) {
     source: new VectorSource({
       format: new GeoJSON(),
       url: function (extent) {
+        let wfsLayName = "ms:ni_samtgemeinden";
         let zoom = map.getView().getZoom();
         let scaleFactor = 1 + (3 - zoom) * 0.3;
         scaleFactor = Math.max(1, Math.min(scaleFactor, 3));
@@ -2374,7 +2294,11 @@ function addWFSLayer(wfsUrl) {
         let newMaxY = maxY + (height * (scaleFactor - 1) / 2);
 
         let adjustedExtent = [newMinX, newMinY, newMaxX, newMaxY];
-        return `${wfsUrl}?service=WFS&version=1.1.0&request=GetFeature&typename=vg2500:vg2500_lan&maxFeatures=10&outputFormat=application/json&srsname=EPSG:3857&bbox=${adjustedExtent.join(",")},EPSG:3857`;
+
+        const layerName = "vg2500:vg2500_lan"; // Hier kannst du den Layer-Namen dynamisch setzen
+
+        return `${wfsUrl}?Service=WFS&Request=GetCapabilities&version=1.1.0&request=GetFeature&typename=${wfsLayName}&maxFeatures=10&outputFormat=application/json&srsname=EPSG:3857&bbox=${adjustedExtent.join(",")},EPSG:3857`;
+                        
       },
       strategy: LoadingStrategy.bbox,
     }),

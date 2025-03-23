@@ -184,7 +184,7 @@ html {
   left: 7px;
   height: 17px; 
   width: 17px;
-  z-index: 1011;
+  z-index: 1;
 }
 /* Marker für Koordinatenanzeige */
 .marker {
