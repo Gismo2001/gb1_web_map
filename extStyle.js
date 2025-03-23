@@ -423,6 +423,7 @@ function arrowStyle(feature) {
         })
     });
 }
+
 function geojsonStyle(feature) {
     const geometryType = feature.getGeometry().getType();
 

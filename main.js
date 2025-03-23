@@ -39,6 +39,10 @@ import SearchPhoton from 'ol-ext/control/SearchPhoton';
 import SearchFeature from 'ol-ext/control/SearchFeature';
 //import SearchNominatim from 'ol-ext/control/SearchNominatim';
 import WMSCapabilities from'ol-ext/control/WMSCapabilities';
+import CanvasAttribution from 'ol-ext/control/CanvasAttribution';
+import CanvasTitle from 'ol-ext/control/CanvasTitle';
+import CanvasScaleLine from 'ol-ext/control/CanvasScaleLine';
+import PrintDialog from 'ol-ext/control/PrintDialog';
 
 import Icon from 'ol/style/Icon'; // Hinzufügen Sie diesen Import
 
@@ -102,22 +106,73 @@ const mapView = new View({
   zoom: 9
 });
 
+
 const map = new Map({
   target: "map",
   view: mapView,
-  controls: defaultControls().extend([
+   controls: defaultControls().extend([
+    
     new FullScreen(),
     new ZoomToExtent({
-       extent: [727361, 6839277, 858148, 6990951] // Geben Sie hier das Ausdehnungsintervall an
+       extent: [727361, 6839277, 858148, 6990951] 
      }),
     attribution,
-   
+    
   ]),
+
   interactions: defaultInteractions().extend([new DragRotateAndZoom()])
 });
 
+// Canvas-Kontrollen hinzufügen
+map.addControl(new CanvasAttribution());
+map.addControl(new CanvasTitle({ 
+  title: '', 
+  visible: false,
+  style: new Style({ 
+    
+  })
+}));
+
+// Print control
+var printControl = new PrintDialog({ 
+  // target: document.querySelector('.info'),
+  // targetDialog: map.getTargetElement() 
+  // save: false,
+  // copy: false,
+  // pdf: false
+});
+printControl.setSize('A4');
+map.addControl(printControl);
+printControl.element.classList.add('print-button');
+
+
+/* On print > save image file */
+printControl.on(['print', 'error'], function(e) {
+  // Print success
+  if (e.image) {
+    if (e.pdf) {
+      // Export pdf using the print info
+      var pdf = new jsPDF({
+        orientation: e.print.orientation,
+        unit: e.print.unit,
+        format: e.print.size
+      });
+      pdf.addImage(e.image, 'JPEG', e.print.position[0], e.print.position[0], e.print.imageWidth, e.print.imageHeight);
+      pdf.save(e.print.legend ? 'legend.pdf' : 'map.pdf');
+    } else  {
+      // Save image as file
+      e.canvas.toBlob(function(blob) {
+        var name = (e.print.legend ? 'legend.' : 'map.')+e.imageType.replace('image/','');
+        saveAs(blob, name);
+      }, e.imageType, e.quality);
+    }
+  } else {
+    console.warn('No canvas to export');
+  }
+});
 
 //------------------------------------Attribution collapse
+/*
 function checkSize() {
   const small = map.getSize()[0] < 600;
   attribution.setCollapsible(small);
@@ -125,6 +180,8 @@ function checkSize() {
 }
 map.on('change:size', checkSize);
 checkSize();
+*/
+
 
 //---------------------------------------------------Marker für Adresssuche
 const sourceP = new VectorSource();
@@ -266,7 +323,7 @@ const exp_bw_que_layer = new VectorLayer({
 const exp_bw_due_layer = new VectorLayer({
   source: new VectorSource({format: new GeoJSON(),url: function (extent) {return './myLayers/exp_bw_due.geojson' + '?bbox=' + extent.join(',');},strategy: LoadingStrategy.bbox }),
   title: 'Düker', // Titel für den Layer-Switcher
- // permalink:"due", 
+  permalink:"due", 
   name: 'due', // Titel für den Layer-Switcher
   style: dueStyle,
   visible: false
@@ -751,12 +808,15 @@ const formatArea = function (polygon) {
   const area = getArea(polygon);
   let output;
   if (area >= 10000) {
-    output = (area / 1000000).toFixed(3) + ' ' + 'km<sup>2</sup>';
+    const km2 = (area / 1000000).toFixed(3) + ' km<sup>2</sup>';
+    const ha = (area / 10000).toFixed(3) + ' ha';
+    output = km2 + ' (' + ha + ')';
   } else {
-    output = area.toFixed(3) + ' ' + 'm<sup>2</sup>';
+    output = area.toFixed(3) + ' m<sup>2</sup>';
   }
   return output;
 };
+
 const style = new Style({
   fill: new Fill({
     color: 'rgba(255, 255, 255, 0.2)',

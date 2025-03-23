@@ -437,3 +437,29 @@ margin: 0px auto 0px 10px;
   top: 5px;
   right: 5px;
 }
+
+
+.ol-attribution {
+  bottom: 0;
+  height: 1em;
+}
+.ol-scale-line {
+  right: 0;
+  left: auto;
+  bottom: 2em;
+}
+.ol-control-title {
+  height: 2em;
+}
+.ol-print-compass {
+  top: 1.5em!important;
+}
+
+.ol-control.print-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  height: 20px;
+  width: 20px;
+  z-index: 1000; /* Stellt sicher, dass der Button über der Karte liegt */
+}
