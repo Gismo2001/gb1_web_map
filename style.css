@@ -438,28 +438,26 @@ margin: 0px auto 0px 10px;
   right: 5px;
 }
 
-
-.ol-attribution {
-  bottom: 0;
-  height: 1em;
-}
-.ol-scale-line {
-  right: 0;
-  left: auto;
-  bottom: 2em;
-}
 .ol-control-title {
   height: 2em;
 }
+
 .ol-print-compass {
-  top: 1.5em!important;
+  top: 1.5em !important;
 }
 
+/* Print-Button unter Full-Extent platzieren */
 .ol-control.print-button {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  height: 20px;
-  width: 20px;
-  z-index: 1000; /* Stellt sicher, dass der Button über der Karte liegt */
+  left: 0px;
+  top: 6em;    /* Setzt den Button direkt unter Full Extent */
+  height: 2.5em;
+  width: 2.5em;
+  z-index: 1000; /* Sicherstellen, dass der Button über der Karte bleibt */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none !important;  /* Entfernt Hintergrund */
+  border: none !important;      /* Entfernt Ränder */
+  box-shadow: none !important;  /* Entfernt Schatten */
 }

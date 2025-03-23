@@ -146,6 +146,13 @@ map.addControl(printControl);
 printControl.element.classList.add('print-button');
 
 
+
+
+
+
+
+
+
 /* On print > save image file */
 printControl.on(['print', 'error'], function(e) {
   // Print success
